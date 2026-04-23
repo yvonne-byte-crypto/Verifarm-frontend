@@ -1,0 +1,2995 @@
+{
+  "address": "9teMVR4r2AB9T5bB4YgXJ38G6mMbxTF6bFm8UYizqx8N",
+  "metadata": {
+    "name": "verifarm",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "VeriFarm — Agricultural lending for East Africa smallholder farmers"
+  },
+  "instructions": [
+    {
+      "name": "apply_for_loan",
+      "discriminator": [
+        49,
+        26,
+        223,
+        86,
+        44,
+        193,
+        124,
+        93
+      ],
+      "accounts": [
+        {
+          "name": "loan",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer"
+              },
+              {
+                "kind": "account",
+                "path": "farmer.loan_count",
+                "account": "Farmer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "farmer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "risk_score",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  105,
+                  115,
+                  107,
+                  95,
+                  115,
+                  99,
+                  111,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_mint",
+          "docs": [
+            "USDC or stablecoin mint"
+          ]
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "farmer"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "ApplyForLoanArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "approve_loan",
+      "discriminator": [
+        223,
+        27,
+        77,
+        138,
+        94,
+        172,
+        21,
+        209
+      ],
+      "accounts": [
+        {
+          "name": "loan",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "loan.farmer",
+                "account": "Loan"
+              },
+              {
+                "kind": "account",
+                "path": "loan.loan_index",
+                "account": "Loan"
+              }
+            ]
+          }
+        },
+        {
+          "name": "officer_entry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110,
+                  95,
+                  111,
+                  102,
+                  102,
+                  105,
+                  99,
+                  101,
+                  114,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "loan_officer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "loan_officer",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "disburse_loan",
+      "discriminator": [
+        115,
+        159,
+        152,
+        253,
+        201,
+        29,
+        29,
+        174
+      ],
+      "accounts": [
+        {
+          "name": "loan",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer"
+              },
+              {
+                "kind": "account",
+                "path": "loan.loan_index",
+                "account": "Loan"
+              }
+            ]
+          }
+        },
+        {
+          "name": "farmer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer.authority",
+                "account": "Farmer"
+              }
+            ]
+          },
+          "relations": [
+            "loan"
+          ]
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "Protocol USDC vault — signs via PDA seeds"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "farmer_token_account",
+          "docs": [
+            "Farmer's USDC token account to receive funds"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "officer_entry",
+          "docs": [
+            "Active loan officer must be registered"
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110,
+                  95,
+                  111,
+                  102,
+                  102,
+                  105,
+                  99,
+                  101,
+                  114,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "loan_officer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "loan_officer",
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_program",
+      "discriminator": [
+        176,
+        107,
+        205,
+        168,
+        24,
+        157,
+        175,
+        103
+      ],
+      "accounts": [
+        {
+          "name": "admin_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_vault",
+      "discriminator": [
+        48,
+        191,
+        163,
+        44,
+        71,
+        129,
+        63,
+        164
+      ],
+      "accounts": [
+        {
+          "name": "vault",
+          "docs": [
+            "PDA-owned USDC vault — the vault PDA is its own SPL authority"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "admin_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "admin_config"
+          ]
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "liquidate_loan",
+      "discriminator": [
+        111,
+        249,
+        185,
+        54,
+        161,
+        147,
+        178,
+        24
+      ],
+      "accounts": [
+        {
+          "name": "loan",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer"
+              },
+              {
+                "kind": "account",
+                "path": "loan.loan_index",
+                "account": "Loan"
+              }
+            ]
+          }
+        },
+        {
+          "name": "farmer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer.authority",
+                "account": "Farmer"
+              }
+            ]
+          },
+          "relations": [
+            "loan"
+          ]
+        },
+        {
+          "name": "officer_entry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110,
+                  95,
+                  111,
+                  102,
+                  102,
+                  105,
+                  99,
+                  101,
+                  114,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "loan_officer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "loan_officer",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "register_farmer",
+      "discriminator": [
+        63,
+        234,
+        139,
+        94,
+        48,
+        7,
+        57,
+        201
+      ],
+      "accounts": [
+        {
+          "name": "farmer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "RegisterFarmerArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "register_officer",
+      "discriminator": [
+        123,
+        151,
+        81,
+        88,
+        14,
+        1,
+        20,
+        127
+      ],
+      "accounts": [
+        {
+          "name": "officer_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110,
+                  95,
+                  111,
+                  102,
+                  102,
+                  105,
+                  99,
+                  101,
+                  114,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "officer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "admin_config"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "officer",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "register_oracle",
+      "discriminator": [
+        176,
+        200,
+        234,
+        37,
+        199,
+        129,
+        164,
+        111
+      ],
+      "accounts": [
+        {
+          "name": "oracle_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "oracle"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "admin_config"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "oracle",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "repay_loan",
+      "discriminator": [
+        224,
+        93,
+        144,
+        77,
+        61,
+        17,
+        137,
+        54
+      ],
+      "accounts": [
+        {
+          "name": "loan",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer"
+              },
+              {
+                "kind": "account",
+                "path": "loan.loan_index",
+                "account": "Loan"
+              }
+            ]
+          }
+        },
+        {
+          "name": "farmer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          },
+          "relations": [
+            "loan"
+          ]
+        },
+        {
+          "name": "farmer_token_account",
+          "writable": true
+        },
+        {
+          "name": "protocol_vault",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "farmer"
+          ]
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "RepayLoanArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "revoke_officer",
+      "discriminator": [
+        154,
+        17,
+        195,
+        226,
+        43,
+        251,
+        45,
+        205
+      ],
+      "accounts": [
+        {
+          "name": "officer_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110,
+                  95,
+                  111,
+                  102,
+                  102,
+                  105,
+                  99,
+                  101,
+                  114,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "officer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "admin_config"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "officer",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "revoke_oracle",
+      "discriminator": [
+        244,
+        253,
+        191,
+        174,
+        58,
+        179,
+        203,
+        48
+      ],
+      "accounts": [
+        {
+          "name": "oracle_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "oracle"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "admin_config"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "oracle",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "submit_risk_score",
+      "discriminator": [
+        87,
+        35,
+        64,
+        109,
+        103,
+        46,
+        18,
+        242
+      ],
+      "accounts": [
+        {
+          "name": "risk_score",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  105,
+                  115,
+                  107,
+                  95,
+                  115,
+                  99,
+                  111,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "farmer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer.authority",
+                "account": "Farmer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "oracle_entry",
+          "docs": [
+            "Oracle must be registered and active in the OracleRegistry"
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "oracle"
+              }
+            ]
+          }
+        },
+        {
+          "name": "oracle",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "SubmitRiskScoreArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "tag_livestock",
+      "discriminator": [
+        118,
+        232,
+        194,
+        111,
+        30,
+        87,
+        24,
+        233
+      ],
+      "accounts": [
+        {
+          "name": "asset",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  115,
+                  115,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "asset.farmer",
+                "account": "Asset"
+              },
+              {
+                "kind": "arg",
+                "path": "args.asset_index"
+              }
+            ]
+          }
+        },
+        {
+          "name": "field_officer",
+          "docs": [
+            "Field officer minting the tag"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "merkle_tree",
+          "writable": true
+        },
+        {
+          "name": "tree_authority"
+        },
+        {
+          "name": "log_wrapper"
+        },
+        {
+          "name": "compression_program"
+        },
+        {
+          "name": "bubblegum_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "TagLivestockArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_farmer_profile",
+      "discriminator": [
+        42,
+        166,
+        26,
+        196,
+        192,
+        94,
+        35,
+        234
+      ],
+      "accounts": [
+        {
+          "name": "farmer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "farmer"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "UpdateFarmerProfileArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_farmer_status",
+      "discriminator": [
+        113,
+        126,
+        145,
+        206,
+        30,
+        109,
+        61,
+        110
+      ],
+      "accounts": [
+        {
+          "name": "farmer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "args.farmer_authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "officer_entry",
+          "docs": [
+            "Officer entry must be active"
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  97,
+                  110,
+                  95,
+                  111,
+                  102,
+                  102,
+                  105,
+                  99,
+                  101,
+                  114,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "officer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "officer",
+          "docs": [
+            "Either admin OR active loan officer can update status"
+          ],
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "UpdateFarmerStatusArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "verify_asset",
+      "discriminator": [
+        136,
+        51,
+        110,
+        228,
+        129,
+        94,
+        141,
+        179
+      ],
+      "accounts": [
+        {
+          "name": "asset",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  115,
+                  115,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer"
+              },
+              {
+                "kind": "arg",
+                "path": "args.asset_index"
+              }
+            ]
+          }
+        },
+        {
+          "name": "farmer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer.authority",
+                "account": "Farmer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "field_officer",
+          "docs": [
+            "Field officer / loan officer who performed physical verification"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "VerifyAssetArgs"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AdminConfig",
+      "discriminator": [
+        156,
+        10,
+        79,
+        161,
+        71,
+        9,
+        62,
+        77
+      ]
+    },
+    {
+      "name": "Asset",
+      "discriminator": [
+        234,
+        180,
+        241,
+        252,
+        139,
+        224,
+        160,
+        8
+      ]
+    },
+    {
+      "name": "Farmer",
+      "discriminator": [
+        254,
+        63,
+        81,
+        98,
+        130,
+        38,
+        28,
+        219
+      ]
+    },
+    {
+      "name": "Loan",
+      "discriminator": [
+        20,
+        195,
+        70,
+        117,
+        165,
+        227,
+        182,
+        1
+      ]
+    },
+    {
+      "name": "LoanOfficerEntry",
+      "discriminator": [
+        75,
+        202,
+        214,
+        209,
+        4,
+        134,
+        160,
+        94
+      ]
+    },
+    {
+      "name": "OracleEntry",
+      "discriminator": [
+        81,
+        249,
+        118,
+        182,
+        248,
+        160,
+        128,
+        111
+      ]
+    },
+    {
+      "name": "RiskScore",
+      "discriminator": [
+        15,
+        32,
+        236,
+        120,
+        51,
+        5,
+        196,
+        238
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AssetVerified",
+      "discriminator": [
+        177,
+        232,
+        142,
+        219,
+        37,
+        247,
+        220,
+        19
+      ]
+    },
+    {
+      "name": "FarmerRegistered",
+      "discriminator": [
+        236,
+        80,
+        141,
+        34,
+        73,
+        254,
+        31,
+        151
+      ]
+    },
+    {
+      "name": "FarmerStatusUpdated",
+      "discriminator": [
+        154,
+        43,
+        60,
+        59,
+        221,
+        112,
+        62,
+        227
+      ]
+    },
+    {
+      "name": "LoanApplied",
+      "discriminator": [
+        22,
+        64,
+        78,
+        220,
+        176,
+        61,
+        27,
+        98
+      ]
+    },
+    {
+      "name": "LoanApproved",
+      "discriminator": [
+        200,
+        165,
+        55,
+        199,
+        125,
+        213,
+        4,
+        243
+      ]
+    },
+    {
+      "name": "LoanDisbursed",
+      "discriminator": [
+        223,
+        190,
+        120,
+        135,
+        68,
+        98,
+        8,
+        248
+      ]
+    },
+    {
+      "name": "LoanLiquidated",
+      "discriminator": [
+        1,
+        29,
+        28,
+        96,
+        66,
+        95,
+        8,
+        204
+      ]
+    },
+    {
+      "name": "LoanRepaid",
+      "discriminator": [
+        202,
+        183,
+        88,
+        60,
+        211,
+        54,
+        142,
+        243
+      ]
+    },
+    {
+      "name": "OfficerRegistered",
+      "discriminator": [
+        112,
+        191,
+        119,
+        20,
+        215,
+        220,
+        165,
+        134
+      ]
+    },
+    {
+      "name": "OfficerRevoked",
+      "discriminator": [
+        49,
+        116,
+        242,
+        30,
+        110,
+        1,
+        113,
+        119
+      ]
+    },
+    {
+      "name": "OracleRegistered",
+      "discriminator": [
+        97,
+        225,
+        241,
+        71,
+        180,
+        49,
+        38,
+        60
+      ]
+    },
+    {
+      "name": "OracleRevoked",
+      "discriminator": [
+        46,
+        163,
+        216,
+        49,
+        163,
+        153,
+        239,
+        118
+      ]
+    },
+    {
+      "name": "ProgramInitialized",
+      "discriminator": [
+        43,
+        70,
+        110,
+        241,
+        199,
+        218,
+        221,
+        245
+      ]
+    },
+    {
+      "name": "RiskScoreSubmitted",
+      "discriminator": [
+        156,
+        234,
+        1,
+        219,
+        66,
+        86,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "VaultInitialized",
+      "discriminator": [
+        180,
+        43,
+        207,
+        2,
+        18,
+        71,
+        3,
+        75
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "FarmerAlreadyRegistered",
+      "msg": "Farmer is already registered"
+    },
+    {
+      "code": 6001,
+      "name": "FarmerNotVerified",
+      "msg": "Farmer is not verified — complete KYC first"
+    },
+    {
+      "code": 6002,
+      "name": "RiskScoreExpired",
+      "msg": "Risk score has expired — oracle must resubmit"
+    },
+    {
+      "code": 6003,
+      "name": "RiskScoreTooLow",
+      "msg": "Risk score is too low for this loan amount"
+    },
+    {
+      "code": 6004,
+      "name": "UnauthorizedOracle",
+      "msg": "Risk score was submitted by an unauthorized oracle"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidLoanState",
+      "msg": "Loan is not in the expected state for this operation"
+    },
+    {
+      "code": 6006,
+      "name": "OverRepayment",
+      "msg": "Repayment amount exceeds outstanding balance"
+    },
+    {
+      "code": 6007,
+      "name": "LoanNotDefaulted",
+      "msg": "Loan is not yet past the due date — cannot liquidate"
+    },
+    {
+      "code": 6008,
+      "name": "AssetAlreadyVerified",
+      "msg": "Asset is already verified"
+    },
+    {
+      "code": 6009,
+      "name": "AssetOwnerMismatch",
+      "msg": "Asset does not belong to this farmer"
+    },
+    {
+      "code": 6010,
+      "name": "MerkleTreeFull",
+      "msg": "Merkle tree is full — create a new tree for livestock tags"
+    },
+    {
+      "code": 6011,
+      "name": "NameTooLong",
+      "msg": "Name exceeds maximum length"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidNationalId",
+      "msg": "Invalid national ID format"
+    },
+    {
+      "code": 6013,
+      "name": "LoanAmountTooSmall",
+      "msg": "Loan amount below minimum threshold"
+    },
+    {
+      "code": 6014,
+      "name": "LoanAmountTooLarge",
+      "msg": "Loan amount exceeds maximum allowed for this risk tier"
+    }
+  ],
+  "types": [
+    {
+      "name": "AdminConfig",
+      "docs": [
+        "Singleton PDA — one per program deployment.",
+        "Holds the admin pubkey and oracle whitelist."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "initialized_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ApplyForLoanArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount_usd_cents",
+            "type": "u64"
+          },
+          {
+            "name": "term_days",
+            "type": "u16"
+          },
+          {
+            "name": "interest_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Asset",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "farmer",
+            "docs": [
+              "Farmer this asset belongs to"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "asset_type",
+            "docs": [
+              "Asset type"
+            ],
+            "type": {
+              "defined": {
+                "name": "AssetType"
+              }
+            }
+          },
+          {
+            "name": "description",
+            "docs": [
+              "Human-readable description"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "value_usd_cents",
+            "docs": [
+              "Estimated value in USD cents (e.g., 150000 = $1,500.00)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "verified",
+            "docs": [
+              "Verification status"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "verified_by",
+            "docs": [
+              "Field agent who verified (pubkey of the verifying officer)"
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "verified_at",
+            "docs": [
+              "Timestamp of verification"
+            ],
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "livestock_tag",
+            "docs": [
+              "For livestock: the cNFT asset_id from Bubblegum (leaf hash)"
+            ],
+            "type": {
+              "option": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "registered_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AssetType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Land"
+          },
+          {
+            "name": "Equipment"
+          },
+          {
+            "name": "Livestock"
+          },
+          {
+            "name": "Crop"
+          },
+          {
+            "name": "Other"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AssetVerified",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "field_officer",
+            "type": "pubkey"
+          },
+          {
+            "name": "value_usd_cents",
+            "type": "u64"
+          },
+          {
+            "name": "verified_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Farmer",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Wallet that owns this farmer account"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "national_id_hash",
+            "docs": [
+              "National ID hash (SHA-256, stored as bytes — never plaintext on-chain)"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "full_name",
+            "docs": [
+              "Full name (max 64 chars)"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "phone",
+            "docs": [
+              "Phone number for field agent contact"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "location_lat",
+            "docs": [
+              "GPS coordinates encoded as fixed-point (lat * 1e6, lng * 1e6)"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "location_lng",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "docs": [
+              "Verification status"
+            ],
+            "type": {
+              "defined": {
+                "name": "FarmerStatus"
+              }
+            }
+          },
+          {
+            "name": "loan_count",
+            "docs": [
+              "Total loans taken (for credit history)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "on_time_repayments",
+            "docs": [
+              "Total loans repaid on time"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "latest_risk_score",
+            "docs": [
+              "Latest risk score (cached from RiskScore PDA)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump for PDA"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "registered_at",
+            "docs": [
+              "Unix timestamp of registration"
+            ],
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FarmerRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "registered_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FarmerStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Verified"
+          },
+          {
+            "name": "Suspended"
+          },
+          {
+            "name": "Blacklisted"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FarmerStatusUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "updated_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_status",
+            "type": {
+              "defined": {
+                "name": "FarmerStatus"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Loan",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_mint",
+            "docs": [
+              "USDC mint (or other stablecoin)"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "principal",
+            "docs": [
+              "Principal in token base units"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "outstanding",
+            "docs": [
+              "Outstanding balance (principal + accrued interest)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "interest_bps",
+            "docs": [
+              "Annual interest rate in basis points (e.g., 1500 = 15%)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "term_days",
+            "docs": [
+              "Loan term in days"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "status",
+            "docs": [
+              "State machine"
+            ],
+            "type": {
+              "defined": {
+                "name": "LoanStatus"
+              }
+            }
+          },
+          {
+            "name": "risk_score_at_approval",
+            "docs": [
+              "Risk score snapshot at approval time"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "loan_index",
+            "docs": [
+              "Loan index for this farmer (used in PDA seed)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "applied_at",
+            "type": "i64"
+          },
+          {
+            "name": "approved_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "disbursed_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "due_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "closed_at",
+            "type": {
+              "option": "i64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoanApplied",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "loan",
+            "type": "pubkey"
+          },
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_usd_cents",
+            "type": "u64"
+          },
+          {
+            "name": "applied_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoanApproved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "loan",
+            "type": "pubkey"
+          },
+          {
+            "name": "loan_officer",
+            "type": "pubkey"
+          },
+          {
+            "name": "approved_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoanDisbursed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "loan",
+            "type": "pubkey"
+          },
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "due_at",
+            "type": "i64"
+          },
+          {
+            "name": "disbursed_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoanLiquidated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "loan",
+            "type": "pubkey"
+          },
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "loan_officer",
+            "type": "pubkey"
+          },
+          {
+            "name": "outstanding",
+            "type": "u64"
+          },
+          {
+            "name": "liquidated_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoanOfficerEntry",
+      "docs": [
+        "One PDA per loan officer — allows fine-grained revocation."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "officer",
+            "type": "pubkey"
+          },
+          {
+            "name": "added_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "added_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoanRepaid",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "loan",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "remaining",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoanStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Approved"
+          },
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Repaid"
+          },
+          {
+            "name": "Defaulted"
+          },
+          {
+            "name": "Liquidated"
+          },
+          {
+            "name": "Rejected"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OfficerRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "officer",
+            "type": "pubkey"
+          },
+          {
+            "name": "added_by",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OfficerRevoked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "officer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleEntry",
+      "docs": [
+        "One PDA per oracle — allows fine-grained revocation."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "oracle",
+            "type": "pubkey"
+          },
+          {
+            "name": "added_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "added_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "oracle",
+            "type": "pubkey"
+          },
+          {
+            "name": "added_by",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleRevoked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "oracle",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProgramInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "initialized_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegisterFarmerArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "national_id_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "full_name",
+            "type": "string"
+          },
+          {
+            "name": "phone",
+            "type": "string"
+          },
+          {
+            "name": "location_lat",
+            "type": "i64"
+          },
+          {
+            "name": "location_lng",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RepayLoanArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RiskScore",
+      "docs": [
+        "Stores the latest AI risk score for a farmer, written by a trusted oracle.",
+        "Score expires after SCORE_VALIDITY_SECONDS — oracle must refresh before loan approval."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "score",
+            "docs": [
+              "Score 0–100. Higher = less risky."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "confidence",
+            "docs": [
+              "Confidence 0–100 from the AI model"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "tier",
+            "docs": [
+              "Risk tier derived from score"
+            ],
+            "type": {
+              "defined": {
+                "name": "RiskTier"
+              }
+            }
+          },
+          {
+            "name": "oracle",
+            "docs": [
+              "Oracle that submitted this score"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "scored_at",
+            "docs": [
+              "Unix timestamp when this score was computed"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "model_version",
+            "docs": [
+              "Model version string (e.g., \"v2.1.0\")"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RiskScoreSubmitted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "score",
+            "type": "u8"
+          },
+          {
+            "name": "confidence",
+            "type": "u8"
+          },
+          {
+            "name": "oracle",
+            "type": "pubkey"
+          },
+          {
+            "name": "scored_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RiskTier",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Prime"
+          },
+          {
+            "name": "Standard"
+          },
+          {
+            "name": "SubPrime"
+          },
+          {
+            "name": "Ineligible"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SubmitRiskScoreArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "score",
+            "type": "u8"
+          },
+          {
+            "name": "confidence",
+            "type": "u8"
+          },
+          {
+            "name": "model_version",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TagLivestockArgs",
+      "docs": [
+        "Mints a compressed NFT (cNFT) via MPL Bubblegum to represent a livestock animal.",
+        "The leaf hash is stored in the Asset PDA for provenance tracking.",
+        "",
+        "Bubblegum CPI requires the merkle tree, tree authority, log wrapper, and",
+        "account compression program — all passed as remaining accounts for flexibility",
+        "across different tree configurations."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_index",
+            "type": "u16"
+          },
+          {
+            "name": "name",
+            "docs": [
+              "Livestock metadata: name, species, ear tag number"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateFarmerProfileArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "phone",
+            "type": {
+              "option": "string"
+            }
+          },
+          {
+            "name": "location_lat",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "location_lng",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "new_status",
+            "docs": [
+              "Only a program admin can change status"
+            ],
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "FarmerStatus"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateFarmerStatusArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "new_status",
+            "type": {
+              "defined": {
+                "name": "FarmerStatus"
+              }
+            }
+          },
+          {
+            "name": "farmer_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VaultInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "admin",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerifyAssetArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_type",
+            "type": {
+              "defined": {
+                "name": "AssetType"
+              }
+            }
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "value_usd_cents",
+            "type": "u64"
+          },
+          {
+            "name": "asset_index",
+            "docs": [
+              "Unique index for this asset under this farmer (used in PDA seed)"
+            ],
+            "type": "u16"
+          }
+        ]
+      }
+    }
+  ]
+}
