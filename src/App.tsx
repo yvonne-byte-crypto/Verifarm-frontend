@@ -12,6 +12,7 @@ import Loans from "@/pages/Loans";
 import Disbursements from "@/pages/Disbursements";
 import Trust from "@/pages/Trust";
 import VerificationQueue from "@/pages/VerificationQueue";
+import AgentRegister from "@/pages/AgentRegister";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/loans" element={<Loans />} />
             <Route path="/disbursements" element={<Disbursements />} />
             <Route path="/verification" element={<VerificationQueue />} />
+            <Route path="/agents" element={<AgentRegister />} />
             <Route path="/trust" element={<Trust />} />
           </Route>
           <Route path="*" element={<NotFound />} />

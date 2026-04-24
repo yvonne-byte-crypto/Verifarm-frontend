@@ -96,9 +96,33 @@
           }
         },
         {
+          "name": "admin_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
           "name": "token_mint",
           "docs": [
-            "USDC or stablecoin mint"
+            "CASH stablecoin mint"
           ]
         },
         {
@@ -207,6 +231,245 @@
       "args": []
     },
     {
+      "name": "clear_verification",
+      "discriminator": [
+        117,
+        92,
+        246,
+        227,
+        163,
+        207,
+        148,
+        213
+      ],
+      "accounts": [
+        {
+          "name": "verification_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  114,
+                  101,
+                  99,
+                  111,
+                  114,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent_stake.agent",
+                "account": "AgentStake"
+              },
+              {
+                "kind": "account",
+                "path": "verification_record.farmer",
+                "account": "VerificationRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_stake",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  95,
+                  115,
+                  116,
+                  97,
+                  107,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "confirm_dispute",
+      "discriminator": [
+        207,
+        178,
+        51,
+        86,
+        74,
+        195,
+        251,
+        202
+      ],
+      "accounts": [
+        {
+          "name": "verification_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  114,
+                  101,
+                  99,
+                  111,
+                  114,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "verification_record.agent",
+                "account": "VerificationRecord"
+              },
+              {
+                "kind": "account",
+                "path": "verification_record.farmer",
+                "account": "VerificationRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_stake",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  95,
+                  115,
+                  116,
+                  97,
+                  107,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "verification_record.agent",
+                "account": "VerificationRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury",
+          "docs": [
+            "Treasury accumulates slashed lamports."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "disburse_loan",
       "discriminator": [
         115,
@@ -275,7 +538,7 @@
         {
           "name": "vault",
           "docs": [
-            "Protocol USDC vault — signs via PDA seeds"
+            "Protocol CASH vault — signs via PDA seeds"
           ],
           "writable": true,
           "pda": {
@@ -309,7 +572,7 @@
         {
           "name": "farmer_token_account",
           "docs": [
-            "Farmer's USDC token account to receive funds"
+            "Farmer's CASH token account to receive funds"
           ],
           "writable": true
         },
@@ -360,6 +623,106 @@
         {
           "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "dispute_verification",
+      "discriminator": [
+        219,
+        239,
+        98,
+        87,
+        26,
+        220,
+        69,
+        85
+      ],
+      "accounts": [
+        {
+          "name": "verification_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  114,
+                  101,
+                  99,
+                  111,
+                  114,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "verification_record.agent",
+                "account": "VerificationRecord"
+              },
+              {
+                "kind": "account",
+                "path": "verification_record.farmer",
+                "account": "VerificationRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "disputer",
+          "docs": [
+            "Disputer must be either the admin OR a separately registered active agent.",
+            "We validate this in the handler rather than in constraints so we can give",
+            "a clear error message."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "disputer_stake",
+          "docs": [
+            "Optional: disputer's own agent_stake (required when disputer is not admin).",
+            "Pass the admin_config account again in place of this if disputer is admin."
+          ],
+          "optional": true
         }
       ],
       "args": []
@@ -430,7 +793,7 @@
         {
           "name": "vault",
           "docs": [
-            "PDA-owned USDC vault — the vault PDA is its own SPL authority"
+            "PDA-owned CASH vault — the vault PDA is its own SPL authority"
           ],
           "writable": true,
           "pda": {
@@ -613,6 +976,102 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "register_agent",
+      "discriminator": [
+        135,
+        157,
+        66,
+        195,
+        2,
+        113,
+        175,
+        30
+      ],
+      "accounts": [
+        {
+          "name": "nullifier_used",
+          "docs": [
+            "Singleton per nullifier — init fails if this human already registered an agent."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  117,
+                  108,
+                  108,
+                  105,
+                  102,
+                  105,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "nullifier_hash"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_stake",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  95,
+                  115,
+                  116,
+                  97,
+                  107,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "stake_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "nullifier_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "register_farmer",
@@ -1231,6 +1690,102 @@
       ]
     },
     {
+      "name": "submit_verification",
+      "discriminator": [
+        30,
+        19,
+        8,
+        156,
+        126,
+        43,
+        28,
+        175
+      ],
+      "accounts": [
+        {
+          "name": "verification_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  105,
+                  102,
+                  105,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  114,
+                  101,
+                  99,
+                  111,
+                  114,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              },
+              {
+                "kind": "account",
+                "path": "farmer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_stake",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  95,
+                  115,
+                  116,
+                  97,
+                  107,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "farmer"
+        },
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "tag_livestock",
       "discriminator": [
         118,
@@ -1566,6 +2121,59 @@
           }
         }
       ]
+    },
+    {
+      "name": "withdraw_stake",
+      "discriminator": [
+        153,
+        8,
+        22,
+        138,
+        105,
+        176,
+        87,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "agent_stake",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  95,
+                  115,
+                  116,
+                  97,
+                  107,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -1580,6 +2188,19 @@
         9,
         62,
         77
+      ]
+    },
+    {
+      "name": "AgentStake",
+      "discriminator": [
+        47,
+        68,
+        130,
+        227,
+        185,
+        4,
+        183,
+        36
       ]
     },
     {
@@ -1635,6 +2256,19 @@
       ]
     },
     {
+      "name": "NullifierUsed",
+      "discriminator": [
+        7,
+        53,
+        228,
+        191,
+        57,
+        28,
+        1,
+        175
+      ]
+    },
+    {
       "name": "OracleEntry",
       "discriminator": [
         81,
@@ -1659,9 +2293,48 @@
         196,
         238
       ]
+    },
+    {
+      "name": "TreasuryVault",
+      "discriminator": [
+        86,
+        102,
+        19,
+        109,
+        56,
+        58,
+        144,
+        81
+      ]
+    },
+    {
+      "name": "VerificationRecord",
+      "discriminator": [
+        247,
+        14,
+        72,
+        93,
+        184,
+        36,
+        154,
+        215
+      ]
     }
   ],
   "events": [
+    {
+      "name": "AgentRegistered",
+      "discriminator": [
+        191,
+        78,
+        217,
+        54,
+        232,
+        100,
+        189,
+        85
+      ]
+    },
     {
       "name": "AssetVerified",
       "discriminator": [
@@ -1673,6 +2346,19 @@
         247,
         220,
         19
+      ]
+    },
+    {
+      "name": "DisputeConfirmed",
+      "discriminator": [
+        230,
+        181,
+        119,
+        7,
+        242,
+        115,
+        188,
+        31
       ]
     },
     {
@@ -1845,6 +2531,19 @@
       ]
     },
     {
+      "name": "StakeWithdrawn",
+      "discriminator": [
+        33,
+        120,
+        159,
+        58,
+        140,
+        255,
+        174,
+        79
+      ]
+    },
+    {
       "name": "VaultInitialized",
       "discriminator": [
         180,
@@ -1855,6 +2554,45 @@
         71,
         3,
         75
+      ]
+    },
+    {
+      "name": "VerificationCleared",
+      "discriminator": [
+        137,
+        148,
+        195,
+        27,
+        202,
+        18,
+        133,
+        227
+      ]
+    },
+    {
+      "name": "VerificationDisputed",
+      "discriminator": [
+        46,
+        53,
+        111,
+        77,
+        120,
+        59,
+        89,
+        251
+      ]
+    },
+    {
+      "name": "VerificationSubmitted",
+      "discriminator": [
+        168,
+        0,
+        119,
+        21,
+        185,
+        123,
+        43,
+        57
       ]
     }
   ],
@@ -1933,6 +2671,66 @@
       "code": 6014,
       "name": "LoanAmountTooLarge",
       "msg": "Loan amount exceeds maximum allowed for this risk tier"
+    },
+    {
+      "code": 6015,
+      "name": "AgentNotRegistered",
+      "msg": "Agent is not registered — call register_agent first"
+    },
+    {
+      "code": 6016,
+      "name": "AgentAlreadyRegistered",
+      "msg": "Agent is already registered"
+    },
+    {
+      "code": 6017,
+      "name": "AgentSuspended",
+      "msg": "Agent is suspended and cannot submit verifications"
+    },
+    {
+      "code": 6018,
+      "name": "InsufficientStake",
+      "msg": "Stake amount is below the minimum required (0.1 SOL)"
+    },
+    {
+      "code": 6019,
+      "name": "DisputeWindowExpired",
+      "msg": "The 72-hour dispute window has expired for this verification"
+    },
+    {
+      "code": 6020,
+      "name": "DisputeWindowActive",
+      "msg": "This verification still has an active dispute window — stake is locked"
+    },
+    {
+      "code": 6021,
+      "name": "VerificationNotPending",
+      "msg": "Verification is not in Pending status"
+    },
+    {
+      "code": 6022,
+      "name": "VerificationNotDisputed",
+      "msg": "Verification is not in Disputed status"
+    },
+    {
+      "code": 6023,
+      "name": "ActiveVerificationsPending",
+      "msg": "Agent has active verifications pending — resolve disputes before withdrawing"
+    },
+    {
+      "code": 6024,
+      "name": "Unauthorized",
+      "msg": "Caller is not authorised to perform this action"
+    },
+    {
+      "code": 6025,
+      "name": "VerificationStale",
+      "msg": "Farmer's field verification is older than the staleness threshold — re-verify before applying"
+    },
+    {
+      "code": 6026,
+      "name": "NullifierAlreadyUsed",
+      "msg": "This World ID nullifier hash has already been used — one human, one agent account"
     }
   ],
   "types": [
@@ -1956,6 +2754,121 @@
           {
             "name": "initialized_at",
             "type": "i64"
+          },
+          {
+            "name": "staleness_threshold_days",
+            "docs": [
+              "Days after which a farmer's field verification is considered stale.",
+              "Checked at loan application time. Default: 180."
+            ],
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "staked_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "nullifier_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "registered_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentStake",
+      "docs": [
+        "One PDA per registered field agent — holds their stake and status."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "staked_lamports",
+            "docs": [
+              "Lamports staked (beyond rent). Slashed to zero on confirmed fraud."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "active_verifications",
+            "docs": [
+              "Count of verifications still in their dispute window."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "AgentStatus"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "registered_at",
+            "type": "i64"
+          },
+          {
+            "name": "nullifier_hash",
+            "docs": [
+              "SHA-256 of the World ID nullifier hash, stored to prove proof-of-personhood."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "world_id_verified",
+            "docs": [
+              "True once a valid World ID proof has been submitted with registration."
+            ],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Suspended"
           }
         ]
       }
@@ -2119,6 +3032,34 @@
       }
     },
     {
+      "name": "DisputeConfirmed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "verification_record",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "slash_amount",
+            "type": "u64"
+          },
+          {
+            "name": "confirmed_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "confirmed_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "Farmer",
       "type": {
         "kind": "struct",
@@ -2212,6 +3153,16 @@
               "Unix timestamp of registration"
             ],
             "type": "i64"
+          },
+          {
+            "name": "last_verified_at",
+            "docs": [
+              "Unix timestamp of the most recent transition to FarmerStatus::Verified.",
+              "None until the first verification; staleness is checked against this."
+            ],
+            "type": {
+              "option": "i64"
+            }
           }
         ]
       }
@@ -2292,7 +3243,7 @@
           {
             "name": "token_mint",
             "docs": [
-              "USDC mint (or other stablecoin)"
+              "CASH mint (or other stablecoin)"
             ],
             "type": "pubkey"
           },
@@ -2565,6 +3516,39 @@
       }
     },
     {
+      "name": "NullifierUsed",
+      "docs": [
+        "Singleton PDA per nullifier hash — its existence prevents the same human",
+        "from registering as two distinct agents across any wallet."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "nullifier_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "registered_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "OfficerRegistered",
       "type": {
         "kind": "struct",
@@ -2827,6 +3811,26 @@
       }
     },
     {
+      "name": "StakeWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "returned_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawn_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "SubmitRiskScoreArgs",
       "type": {
         "kind": "struct",
@@ -2877,6 +3881,25 @@
           {
             "name": "uri",
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TreasuryVault",
+      "docs": [
+        "Singleton PDA — accumulates slashed agent stake."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "total_slashed_lamports",
+            "type": "u64"
           }
         ]
       }
@@ -2956,6 +3979,148 @@
           {
             "name": "admin",
             "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerificationCleared",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "cleared_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerificationDisputed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "verification_record",
+            "type": "pubkey"
+          },
+          {
+            "name": "disputer",
+            "type": "pubkey"
+          },
+          {
+            "name": "disputed_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerificationRecord",
+      "docs": [
+        "One PDA per (agent, farmer) verification submission."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "submitted_at",
+            "type": "i64"
+          },
+          {
+            "name": "dispute_window_ends",
+            "docs": [
+              "Unix timestamp when the 72-hour dispute window closes."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "VerificationStatus"
+              }
+            }
+          },
+          {
+            "name": "disputed_by",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "disputed_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerificationStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Disputed"
+          },
+          {
+            "name": "Cleared"
+          },
+          {
+            "name": "Slashed"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerificationSubmitted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "verification_record",
+            "type": "pubkey"
+          },
+          {
+            "name": "dispute_window_ends",
+            "type": "i64"
+          },
+          {
+            "name": "submitted_at",
+            "type": "i64"
           }
         ]
       }

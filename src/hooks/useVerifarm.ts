@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { connection, getAdminConfigPda, getFarmerPda, getProgram } from "@/lib/solana";
+import { connection, getAdminConfigPda, getAgentStakePda, getFarmerPda, getProgram } from "@/lib/solana";
 
 export interface ChainStatus {
   adminInitialized: boolean;
@@ -88,6 +88,62 @@ export function useMyFarmer(): FarmerChainData {
         });
       } catch {
         if (!cancelled) setState({ fullName: "", status: "", loanCount: 0, latestRiskScore: 0, loading: false, exists: false });
+      }
+    }
+    fetch();
+    return () => { cancelled = true; };
+  }, [wallet, conn]);
+
+  return state;
+}
+
+export interface AgentStakeData {
+  exists: boolean;
+  loading: boolean;
+  stakedLamports: number;
+  worldIdVerified: boolean;
+  status: "active" | "suspended" | null;
+  activeVerifications: number;
+}
+
+/** Reads the connected wallet's AgentStake PDA if it exists */
+export function useMyAgentStake(): AgentStakeData {
+  const wallet = useAnchorWallet();
+  const { connection: conn } = useConnection();
+  const [state, setState] = useState<AgentStakeData>({
+    exists: false,
+    loading: false,
+    stakedLamports: 0,
+    worldIdVerified: false,
+    status: null,
+    activeVerifications: 0,
+  });
+
+  useEffect(() => {
+    if (!wallet) {
+      setState((s) => ({ ...s, exists: false, loading: false }));
+      return;
+    }
+    let cancelled = false;
+    async function fetch() {
+      setState((s) => ({ ...s, loading: true }));
+      try {
+        const provider = new AnchorProvider(conn, wallet!, { commitment: "confirmed" });
+        const program = getProgram(provider);
+        const pda = getAgentStakePda(wallet!.publicKey);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const stake = await (program.account as any).agentStake.fetch(pda);
+        if (cancelled) return;
+        setState({
+          exists: true,
+          loading: false,
+          stakedLamports: stake.stakedLamports.toNumber(),
+          worldIdVerified: stake.worldIdVerified ?? false,
+          status: "active" in stake.status ? "active" : "suspended",
+          activeVerifications: stake.activeVerifications,
+        });
+      } catch {
+        if (!cancelled) setState({ exists: false, loading: false, stakedLamports: 0, worldIdVerified: false, status: null, activeVerifications: 0 });
       }
     }
     fetch();

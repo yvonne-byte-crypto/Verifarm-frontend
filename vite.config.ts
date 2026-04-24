@@ -5,7 +5,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 export default defineConfig(() => ({
   server: {
-    host: "::",
+    host: "localhost",
     port: 8080,
     hmr: { overlay: false },
   },

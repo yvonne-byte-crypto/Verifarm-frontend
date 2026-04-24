@@ -6,6 +6,7 @@ import {
   ArrowRightLeft,
   ShieldCheck,
   ClipboardCheck,
+  UserCheck,
   X,
 } from "lucide-react";
 import verifarmLogo from "@/assets/verifarm-logo.png";
@@ -15,6 +16,7 @@ const links = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard", badge: undefined },
   { to: "/farmers", icon: Users, label: "Farmers", badge: undefined },
   { to: "/verification", icon: ClipboardCheck, label: "Verification Queue", badge: 5 },
+  { to: "/agents", icon: UserCheck, label: "Agent Registration", badge: undefined },
   { to: "/loans", icon: Landmark, label: "Loans", badge: undefined },
   { to: "/disbursements", icon: ArrowRightLeft, label: "Disbursements", badge: undefined },
   { to: "/trust", icon: ShieldCheck, label: "Trust & Transparency", badge: undefined },

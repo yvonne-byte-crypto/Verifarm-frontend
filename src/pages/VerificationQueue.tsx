@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, MapPin, AlertCircle, Clock, Phone } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import WorldIdBadge from "@/components/WorldIdBadge";
 
 interface QueueItem {
   id: string;
@@ -15,14 +16,16 @@ interface QueueItem {
   landAcres: string;
   livestock: string;
   region: string;
+  agentName: string;
+  agentWorldIdVerified: boolean;
 }
 
 const initialQueue: QueueItem[] = [
-  { id: "VQ-001", farmer: "Amina Juma", phone: "+255 712 345 678", submittedAt: "2 hrs ago", dateSubmitted: "Apr 18, 2026", farmSize: "4–6 acres", landAcres: "5", livestock: "12 cattle, 8 goats", region: "Arusha" },
-  { id: "VQ-002", farmer: "Baraka Mwenda", phone: "+255 754 321 987", submittedAt: "5 hrs ago", dateSubmitted: "Apr 18, 2026", farmSize: "7+ acres", landAcres: "9", livestock: "20 cattle", region: "Dar es Salaam" },
-  { id: "VQ-003", farmer: "Chiku Lema", phone: "+255 689 456 123", submittedAt: "1 day ago", dateSubmitted: "Apr 17, 2026", farmSize: "1–3 acres", landAcres: "3", livestock: "30 chickens", region: "Mwanza" },
-  { id: "VQ-004", farmer: "Daudi Kileo", phone: "+255 621 789 456", submittedAt: "1 day ago", dateSubmitted: "Apr 17, 2026", farmSize: "4–6 acres", landAcres: "4", livestock: "8 cattle, 15 goats", region: "Tanga" },
-  { id: "VQ-005", farmer: "Ester Nkya", phone: "+255 745 654 321", submittedAt: "2 days ago", dateSubmitted: "Apr 16, 2026", farmSize: "1–3 acres", landAcres: "2", livestock: "5 goats, 20 chickens", region: "Iringa" },
+  { id: "VQ-001", farmer: "Amina Juma", phone: "+255 712 345 678", submittedAt: "2 hrs ago", dateSubmitted: "Apr 18, 2026", farmSize: "4–6 acres", landAcres: "5", livestock: "12 cattle, 8 goats", region: "Arusha", agentName: "Agent Juma K.", agentWorldIdVerified: true },
+  { id: "VQ-002", farmer: "Baraka Mwenda", phone: "+255 754 321 987", submittedAt: "5 hrs ago", dateSubmitted: "Apr 18, 2026", farmSize: "7+ acres", landAcres: "9", livestock: "20 cattle", region: "Dar es Salaam", agentName: "Agent Zawadi M.", agentWorldIdVerified: true },
+  { id: "VQ-003", farmer: "Chiku Lema", phone: "+255 689 456 123", submittedAt: "1 day ago", dateSubmitted: "Apr 17, 2026", farmSize: "1–3 acres", landAcres: "3", livestock: "30 chickens", region: "Mwanza", agentName: "Agent Otieno B.", agentWorldIdVerified: false },
+  { id: "VQ-004", farmer: "Daudi Kileo", phone: "+255 621 789 456", submittedAt: "1 day ago", dateSubmitted: "Apr 17, 2026", farmSize: "4–6 acres", landAcres: "4", livestock: "8 cattle, 15 goats", region: "Tanga", agentName: "Agent Nakato R.", agentWorldIdVerified: true },
+  { id: "VQ-005", farmer: "Ester Nkya", phone: "+255 745 654 321", submittedAt: "2 days ago", dateSubmitted: "Apr 16, 2026", farmSize: "1–3 acres", landAcres: "2", livestock: "5 goats, 20 chickens", region: "Iringa", agentName: "Agent Mwita S.", agentWorldIdVerified: false },
 ];
 
 const VerificationQueue = () => {
@@ -82,6 +85,18 @@ const VerificationQueue = () => {
                 <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
                 <span className="font-mono">{item.phone}</span>
                 <span className="ml-auto flex items-center gap-1"><MapPin className="h-3 w-3" />{item.region}</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/30 rounded-lg px-2 py-1.5">
+                <span className="text-muted-foreground">Submitted by</span>
+                <span className="font-medium text-foreground">{item.agentName}</span>
+                <div className="ml-auto">
+                  <WorldIdBadge verified={item.agentWorldIdVerified} />
+                  {!item.agentWorldIdVerified && (
+                    <Badge variant="outline" className="text-[10px] text-muted-foreground border-muted">
+                      Unverified Agent
+                    </Badge>
+                  )}
+                </div>
               </div>
               <div className="flex gap-2 pt-1">
                 <Button size="sm" className="flex-1 gap-1.5 bg-primary hover:bg-primary/90" onClick={() => handleVerify(item.id, item.farmer)}>
