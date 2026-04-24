@@ -6,7 +6,7 @@
 
 ![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?style=flat&logo=solana)
 ![Anchor](https://img.shields.io/badge/Anchor-0.31.0-blue)
-![Tests](https://img.shields.io/badge/Tests-23%20Passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-33%20Passing-brightgreen)
 ![Status](https://img.shields.io/badge/Status-Live%20on%20Devnet-brightgreen)
 ![Built With](https://img.shields.io/badge/Built%20with-Claude%20Code%20%2B%20solana.new-orange)
 
@@ -110,7 +110,7 @@ verified attestation.
 
 **Program ID:** `9teMVR4r2AB9T5bB4YgXJ38G6mMbxTF6bFm8UYizqx8N`
 **Network:** Devnet
-**Tests:** 23 bankrun tests passing
+**Tests:** 33 bankrun tests passing
 
 | Instruction | Description |
 |---|---|
@@ -150,7 +150,7 @@ approval and community trust in East African markets.
 
 ## 📱 Farmer Access — USSD
 
-Farmers dial `*123#` on any basic phone:
+Farmers dial `*384*26730#` on any basic phone:
 
 ```
 Welcome to VeriFarm / Karibu VeriFarm
@@ -197,7 +197,7 @@ Welcome to VeriFarm / Karibu VeriFarm
 |---|---|---|
 | Verify land physically | ❌ Cannot | ✅ GPS nodes on-ground |
 | Permanent records | ❌ No memory | ✅ Solana on-chain |
-| Works on basic phones | ❌ Needs internet | ✅ USSD *123# |
+| Works on basic phones | ❌ Needs internet | ✅ USSD *384*26730# |
 | Regulatory compliance | ❌ Not a legal entity | ✅ MFI partnership layer |
 | Community trust | ❌ Black box | ✅ Full explainability |
 
@@ -213,7 +213,7 @@ Welcome to VeriFarm / Karibu VeriFarm
 - **React + Vite + shadcn/ui** — frontend stack
 - **solana.new + Claude Code** — agentic engineering
 - **Vercel** — frontend deployment
-- **Bankrun** — 23 passing tests
+- **Bankrun** — 33 passing tests
 
 ---
 
@@ -231,7 +231,7 @@ npm run dev
 ## 🌱 Roadmap
 
 - [x] Anchor oracle program deployed on Solana Devnet
-- [x] 23 bankrun tests passing
+- [x] 33 bankrun tests passing
 - [x] Lender dashboard live on Vercel
 - [x] AI explainability breakdown
 - [x] Early warning alert system
