@@ -8,7 +8,7 @@
 
 ![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?style=flat&logo=solana)
 ![Anchor](https://img.shields.io/badge/Anchor-0.31.0-blue)
-![Tests](https://img.shields.io/badge/Tests-36%20Passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-37%20Passing-brightgreen)
 ![Status](https://img.shields.io/badge/Status-Live%20on%20Devnet-brightgreen)
 ![Built With](https://img.shields.io/badge/Built%20with-Claude%20Code%20%2B%20solana.new-orange)
 
@@ -90,7 +90,7 @@ verified farmer.
 
 **Program ID:** `9teMVR4r2AB9T5bB4YgXJ38G6mMbxTF6bFm8UYizqx8N`
 **Network:** Devnet
-**Tests:** 36 bankrun tests passing
+**Tests:** 37 bankrun tests passing
 
 | Instruction | Description |
 |---|---|
@@ -244,7 +244,7 @@ VeriFarm does not hold or lend capital directly.
 - **React + Tailwind** — lender dashboard
 - **solana.new + Claude Code** — agentic engineering
 - **Vercel** — frontend deployment
-- **Bankrun** — 36 passing tests
+- **Bankrun** — 37 passing tests
 
 ---
 
@@ -262,7 +262,7 @@ npm run dev
 ## 🌱 Roadmap
 
 - [x] Anchor oracle program deployed on Solana Devnet
-- [x] 36 bankrun tests passing
+- [x] 37 bankrun tests passing
 - [x] Agent staking anti-fraud layer
 - [x] Lender dashboard live on Vercel
 - [x] AI explainability breakdown
