@@ -139,6 +139,10 @@ Score Breakdown — Amina Juma, Dodoma:
 Total: 85 / 100 — Low Risk — Approved
 Max Loan: TZS 420,000 at 50% LTV
 ```
+Scores are decomposed into four weighted factors: GPS 
+polygon quality, attestation age, agent stake history, 
+and M-Pesa repayment record — displayed as a visual 
+breakdown per borrower profile on the lender dashboard.
 
 ---
 
@@ -222,6 +226,18 @@ All sensitive farmer data is hashed on-chain. Raw data
 is only accessible to authorized MFI PDAs through
 program-gated instructions.
 
+**Community Collusion Defense:**
+World ID prevents sybil attacks — one human, one agent 
+account. To prevent self-dealing between legitimate agents 
+in the same community, VeriFarm enforces geographic 
+independence: cross-attesting agents must operate from GPS 
+coordinates more than 50km from the primary agent's 
+registered location. Any agent can challenge a boundary 
+attestation and earn the slashed stake if the dispute is 
+upheld by a threshold of geographically distant observers.
+This makes community-level collusion economically irrational 
+even among World ID verified agents.
+
 ---
 
 ## 💰 Capital Model
@@ -234,6 +250,11 @@ VeriFarm does not hold or lend capital directly.
 - Currently in conversations with FINCA Tanzania, BRAC
   Tanzania, Equity Bank Tanzania, and NMB Bank
 - VeriFarm earns an oracle attestation fee per verified farmer
+
+CASH (Phantom Frontier) is used for loan disbursement. 
+The lender dashboard allows MFI partners to configure 
+an alternative stablecoin fallback (USDC, USDT) to 
+mitigate single-stablecoin concentration risk.
 
 ---
 
