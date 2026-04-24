@@ -124,6 +124,10 @@ verification. If they submit fraudulent data:
 **Economic deterrent:** The cost of staking across a colluding
 ring exceeds the fraudulent loan value at 50% LTV.
 
+World ID IDKit widget integrated for agent registration 
+UX — server-side proof verification scoped for 
+production deployment
+
 ---
 
 ## 🤖 AI Risk Scoring — Fully Explainable
