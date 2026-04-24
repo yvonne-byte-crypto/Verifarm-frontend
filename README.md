@@ -294,6 +294,9 @@ npm run dev
 - [x] Wallet connection + live chain status
 - [x] Full mobile responsiveness
 - [ ] Africa's Talking production number
+- [ ] Enhanced livestock attestation — mandatory photo 
+  hash on-chain (Arweave) + higher stake requirement 
+  (Phase 2)
 - [ ] Real phone testing in Tanzania
 - [ ] MFI partner pilot — Manyara, Tanzania
 - [ ] Mainnet launch
