@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,12 +26,12 @@ const loanSteps = [
 
 type RiskLevel = "Low" | "Medium" | "High";
 
-const activeLoans = [
-  { id: "LN-001", farmerId: "F001", farmer: "Amina Juma", amount: "300,000", issued: "Mar 1, 2026", due: "Mar 31, 2026", status: "active", progress: 65, currentStep: 5, aiScore: 87 },
-  { id: "LN-002", farmerId: "F002", farmer: "Baraka Mwenda", amount: "500,000", issued: "Feb 15, 2026", due: "Mar 15, 2026", status: "overdue", progress: 100, currentStep: 5, aiScore: 48 },
-  { id: "LN-003", farmerId: "F004", farmer: "Daudi Kileo", amount: "800,000", issued: "Mar 10, 2026", due: "Apr 10, 2026", status: "active", progress: 30, currentStep: 5, aiScore: 72 },
-  { id: "LN-004", farmerId: "F005", farmer: "Ester Nkya", amount: "200,000", issued: "Mar 5, 2026", due: "Apr 5, 2026", status: "active", progress: 45, currentStep: 4, aiScore: 81 },
-  { id: "LN-005", farmerId: "F003", farmer: "Chiku Lema", amount: "150,000", issued: "Feb 20, 2026", due: "Mar 20, 2026", status: "repaid", progress: 100, currentStep: 5, aiScore: 92 },
+const allLoans = [
+  { id: "LN-001", farmerId: "F001", farmer: "Amina Juma", amount: "300,000", issued: "Mar 1, 2026", due: "Mar 31, 2026", status: "active", progress: 65, currentStep: 5, aiScore: 87, lenderId: "L001" },
+  { id: "LN-002", farmerId: "F002", farmer: "Baraka Mwenda", amount: "500,000", issued: "Feb 15, 2026", due: "Mar 15, 2026", status: "overdue", progress: 100, currentStep: 5, aiScore: 48, lenderId: "L001" },
+  { id: "LN-003", farmerId: "F004", farmer: "Daudi Kileo", amount: "800,000", issued: "Mar 10, 2026", due: "Apr 10, 2026", status: "active", progress: 30, currentStep: 5, aiScore: 72, lenderId: "L001" },
+  { id: "LN-004", farmerId: "F005", farmer: "Ester Nkya", amount: "200,000", issued: "Mar 5, 2026", due: "Apr 5, 2026", status: "active", progress: 45, currentStep: 4, aiScore: 81, lenderId: "L002" },
+  { id: "LN-005", farmerId: "F003", farmer: "Chiku Lema", amount: "150,000", issued: "Feb 20, 2026", due: "Mar 20, 2026", status: "repaid", progress: 100, currentStep: 5, aiScore: 92, lenderId: "L002" },
 ];
 
 const getRisk = (score: number): RiskLevel =>
@@ -58,8 +59,14 @@ const riskFilterOptions: { value: string; label: string }[] = [
 
 const Loans = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeStep, setActiveStep] = useState(4);
   const [riskFilter, setRiskFilter] = useState<string>("all");
+
+  const activeLoans =
+    user?.role === "lender" && user.lenderId
+      ? allLoans.filter((l) => l.lenderId === user.lenderId)
+      : allLoans;
 
   const filtered = useMemo(
     () =>
@@ -67,7 +74,7 @@ const Loans = () => {
         const risk = getRisk(l.aiScore);
         return riskFilter === "all" || risk === riskFilter;
       }),
-    [riskFilter]
+    [riskFilter, activeLoans]
   );
 
   return (

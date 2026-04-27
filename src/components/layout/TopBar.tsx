@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Menu, Bell, Search, AlertCircle, CheckCircle2, CloudRain, ClipboardCheck, Banknote, User, Settings, Shield, LogOut, ChevronDown, Wallet, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { useDemoMode } from "@/context/DemoModeContext";
+import { useAuth } from "@/context/AuthContext";
 
 interface Notification {
   id: string;
@@ -83,12 +85,34 @@ const TopBar = ({ onMenuToggle }: TopBarProps) => {
   const { connected, publicKey, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
   const { demoMode, setDemoMode } = useDemoMode();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const shortKey = publicKey
     ? `${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}`
     : null;
 
   const unreadCount = notifications.filter((n) => n.unread).length;
+
+  const displayName = user?.name ?? "Admin";
+  const displayEmail = user?.email ?? "admin@verifarm.co.tz";
+  const initials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  const roleLabel =
+    user?.role === "admin"
+      ? "Super Admin"
+      : user?.role === "lender"
+      ? user.institution ?? "Lender"
+      : "Field Agent";
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const markAllRead = () =>
     setNotifications((ns) => ns.map((n) => ({ ...n, unread: false })));
@@ -233,12 +257,12 @@ const TopBar = ({ onMenuToggle }: TopBarProps) => {
           <PopoverTrigger asChild>
             <button
               className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted transition-colors"
-              aria-label="Admin account menu"
+              aria-label="Account menu"
             >
               <div className="h-8 w-8 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground shrink-0">
-                AW
+                {initials}
               </div>
-              <span className="hidden text-sm font-medium md:block">Admin</span>
+              <span className="hidden text-sm font-medium md:block max-w-[120px] truncate">{displayName}</span>
               <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground md:block" aria-hidden="true" />
             </button>
           </PopoverTrigger>
@@ -246,37 +270,38 @@ const TopBar = ({ onMenuToggle }: TopBarProps) => {
             {/* Profile header */}
             <div className="flex items-center gap-3 px-4 py-4 border-b border-border bg-muted/30 rounded-t-lg">
               <div className="h-12 w-12 rounded-full gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground shrink-0">
-                AW
+                {initials}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold">Admin Wanjiku</p>
-                <p className="text-xs text-muted-foreground truncate">admin@verifarm.co.tz</p>
+                <p className="text-sm font-semibold truncate">{displayName}</p>
+                <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
                 <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-medium text-primary bg-primary/10 rounded-full px-2 py-0.5">
-                  <Shield className="h-2.5 w-2.5" aria-hidden="true" /> Super Admin
+                  <Shield className="h-2.5 w-2.5" aria-hidden="true" /> {roleLabel}
                 </span>
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 divide-x divide-border border-b border-border text-center">
-              {[
-                { label: "Loans", value: "1,543" },
-                { label: "Farmers", value: "2,847" },
-                { label: "Alerts", value: "4" },
-              ].map((s) => (
-                <div key={s.label} className="py-2.5">
-                  <p className="text-sm font-bold">{s.value}</p>
-                  <p className="text-[10px] text-muted-foreground">{s.label}</p>
-                </div>
-              ))}
-            </div>
+            {/* Stats — only for admin/lender */}
+            {user?.role !== "agent" && (
+              <div className="grid grid-cols-3 divide-x divide-border border-b border-border text-center">
+                {[
+                  { label: "Loans", value: "1,543" },
+                  { label: "Farmers", value: "2,847" },
+                  { label: "Alerts", value: "4" },
+                ].map((s) => (
+                  <div key={s.label} className="py-2.5">
+                    <p className="text-sm font-bold">{s.value}</p>
+                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Menu items */}
             <div className="py-1.5">
               {[
                 { icon: User, label: "My Profile" },
                 { icon: Settings, label: "Account Settings" },
-                { icon: Shield, label: "Permissions & Roles" },
               ].map(({ icon: Icon, label }) => (
                 <button
                   key={label}
@@ -289,7 +314,10 @@ const TopBar = ({ onMenuToggle }: TopBarProps) => {
             </div>
 
             <div className="border-t border-border py-1.5">
-              <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors text-left">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors text-left"
+              >
                 <LogOut className="h-4 w-4" aria-hidden="true" />
                 Sign Out
               </button>

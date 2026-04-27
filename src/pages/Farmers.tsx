@@ -5,20 +5,27 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, CheckCircle2, ArrowRight, Info } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const farmersData = [
-  { id: "F001", name: "Amina Juma", location: "Dodoma", land: 5, cattle: 12, score: 87, eligible: "300,000", status: "verified" },
-  { id: "F002", name: "Baraka Mwenda", location: "Arusha", land: 8, cattle: 20, score: 92, eligible: "500,000", status: "verified" },
-  { id: "F003", name: "Chiku Lema", location: "Mbeya", land: 3, cattle: 6, score: 72, eligible: "150,000", status: "pending" },
-  { id: "F004", name: "Daudi Kileo", location: "Kilimanjaro", land: 12, cattle: 35, score: 95, eligible: "800,000", status: "verified" },
-  { id: "F005", name: "Ester Nkya", location: "Morogoro", land: 4, cattle: 8, score: 78, eligible: "200,000", status: "verified" },
-  { id: "F006", name: "Farida Hassan", location: "Tanga", land: 6, cattle: 15, score: 84, eligible: "350,000", status: "pending" },
+  { id: "F001", name: "Amina Juma", location: "Dodoma", land: 5, cattle: 12, score: 87, eligible: "300,000", status: "verified", lenderId: "L001" },
+  { id: "F002", name: "Baraka Mwenda", location: "Arusha", land: 8, cattle: 20, score: 92, eligible: "500,000", status: "verified", lenderId: "L001" },
+  { id: "F003", name: "Chiku Lema", location: "Mbeya", land: 3, cattle: 6, score: 72, eligible: "150,000", status: "pending", lenderId: "L002" },
+  { id: "F004", name: "Daudi Kileo", location: "Kilimanjaro", land: 12, cattle: 35, score: 95, eligible: "800,000", status: "verified", lenderId: "L001" },
+  { id: "F005", name: "Ester Nkya", location: "Morogoro", land: 4, cattle: 8, score: 78, eligible: "200,000", status: "verified", lenderId: "L002" },
+  { id: "F006", name: "Farida Hassan", location: "Tanga", land: 6, cattle: 15, score: 84, eligible: "350,000", status: "pending", lenderId: "L002" },
 ];
 
 const Farmers = () => {
   const [search, setSearch] = useState("");
+  const { user } = useAuth();
 
-  const filtered = farmersData.filter(
+  const visibleFarmers =
+    user?.role === "lender" && user.lenderId
+      ? farmersData.filter((f) => f.lenderId === user.lenderId)
+      : farmersData;
+
+  const filtered = visibleFarmers.filter(
     (f) =>
       f.name.toLowerCase().includes(search.toLowerCase()) ||
       f.location.toLowerCase().includes(search.toLowerCase())

@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 import { DemoModeProvider } from "@/context/DemoModeContext";
+import { useAuth } from "@/context/AuthContext";
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useAuth();
+
+  if (!user) return <Navigate to="/login" replace />;
 
   return (
     <DemoModeProvider>
