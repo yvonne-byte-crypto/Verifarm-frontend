@@ -6,11 +6,41 @@ import { Label } from "@/components/ui/label";
 import { login } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 import verifarmLogo from "@/assets/verifarm-logo.png";
-import { Eye, EyeOff, FlaskConical, Loader2, Leaf } from "lucide-react";
+import { Eye, EyeOff, FlaskConical, Loader2, Leaf, Shield, Building2, UserCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+type RoleOption = "admin" | "lender" | "agent";
+
+const ROLES: {
+  id: RoleOption;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+}[] = [
+  {
+    id: "admin",
+    label: "Super Admin",
+    icon: Shield,
+    description: "Full platform access — manage lenders, agents, loans, and system settings.",
+  },
+  {
+    id: "lender",
+    label: "Lender / Bank",
+    icon: Building2,
+    description: "Access your institution's loan portfolio and farmer profiles.",
+  },
+  {
+    id: "agent",
+    label: "Field Agent",
+    icon: UserCheck,
+    description: "Submit and manage farm verifications in your assigned region.",
+  },
+];
 
 const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<RoleOption>("lender");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,12 +54,10 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     const creds = override ?? { email, password };
     await new Promise((r) => setTimeout(r, 350));
     const result = login(creds.email, creds.password);
     setLoading(false);
-
     if ("error" in result) {
       setError(result.error);
     } else {
@@ -47,10 +75,8 @@ const Login = () => {
           <span className="text-xl font-bold text-primary-foreground">VeriFarm</span>
         </div>
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
-              <Leaf className="h-6 w-6 text-white" />
-            </div>
+          <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
+            <Leaf className="h-6 w-6 text-white" />
           </div>
           <h2 className="text-4xl font-bold text-white leading-tight">
             Agricultural micro-lending for East Africa
@@ -74,8 +100,8 @@ const Login = () => {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex flex-1 flex-col items-center justify-center p-6 lg:p-12">
-        <div className="w-full max-w-sm space-y-8">
+      <div className="flex flex-1 flex-col items-center justify-center p-6 lg:p-12 overflow-y-auto">
+        <div className="w-full max-w-sm space-y-6">
           {/* Mobile logo */}
           <div className="flex flex-col items-center gap-2 lg:hidden">
             <img src={verifarmLogo} alt="VeriFarm" className="h-14 w-14 rounded-2xl object-cover shadow-lg" />
@@ -84,9 +110,50 @@ const Login = () => {
 
           <div>
             <h2 className="text-2xl font-bold">Welcome back</h2>
-            <p className="text-sm text-muted-foreground mt-1">Sign in to your lender dashboard</p>
+            <p className="text-sm text-muted-foreground mt-1">Select your role to sign in</p>
           </div>
 
+          {/* Role selector */}
+          <div className="space-y-2">
+            {ROLES.map(({ id, label, icon: Icon, description }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setSelectedRole(id)}
+                className={cn(
+                  "w-full flex items-start gap-3 rounded-xl border p-3.5 text-left transition-all",
+                  selectedRole === id
+                    ? "border-primary bg-primary/5 ring-1 ring-primary"
+                    : "border-border bg-card hover:border-primary/40 hover:bg-muted/40"
+                )}
+              >
+                <div className={cn(
+                  "h-9 w-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5",
+                  selectedRole === id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                )}>
+                  <Icon className="h-4.5 w-4.5" />
+                </div>
+                <div className="min-w-0">
+                  <p className={cn("text-sm font-semibold", selectedRole === id ? "text-primary" : "text-foreground")}>
+                    {label}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{description}</p>
+                </div>
+                <div className={cn(
+                  "h-4 w-4 rounded-full border-2 shrink-0 mt-1 ml-auto transition-colors",
+                  selectedRole === id ? "border-primary bg-primary" : "border-muted-foreground/30"
+                )}>
+                  {selectedRole === id && (
+                    <div className="h-full w-full rounded-full flex items-center justify-center">
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+                    </div>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Credentials form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="email">Email address</Label>
@@ -135,7 +202,7 @@ const Login = () => {
 
             <Button type="submit" className="w-full h-11" disabled={loading}>
               {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              Sign in
+              Sign in as {ROLES.find((r) => r.id === selectedRole)?.label}
             </Button>
           </form>
 
@@ -148,6 +215,7 @@ const Login = () => {
             </div>
           </div>
 
+          {/* Demo login — bypasses role selection */}
           <Button
             variant="outline"
             className="w-full h-11 border-primary/40 text-primary hover:bg-primary/10"
@@ -161,7 +229,7 @@ const Login = () => {
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
-            New lender or financial institution?{" "}
+            New to VeriFarm?{" "}
             <Link to="/register" className="text-primary font-medium hover:underline">
               Apply for access
             </Link>

@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getAllLenders, approveLender, rejectLender } from "@/lib/auth";
 import type { AuthUser } from "@/lib/auth";
-import { Building2, CheckCircle2, XCircle, Clock, MapPin, FileText } from "lucide-react";
+import { sendAccountApproved } from "@/lib/email";
+import { Building2, CheckCircle2, XCircle, Clock, MapPin, FileText, UserCheck } from "lucide-react";
 
 const statusBadge = (status: AuthUser["status"]) => {
   if (status === "active")
@@ -19,9 +20,12 @@ const AdminUsers = () => {
 
   const refresh = () => setLenders(getAllLenders());
 
-  const approve = (id: string) => {
-    approveLender(id);
+  const approve = async (id: string) => {
+    const user = approveLender(id);
     refresh();
+    if (user) {
+      await sendAccountApproved({ to_email: user.email, to_name: user.name, role: user.role });
+    }
   };
 
   const reject = (id: string) => {
@@ -35,9 +39,9 @@ const AdminUsers = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold">Lender Accounts</h1>
+        <h1 className="text-2xl font-bold">User Accounts</h1>
         <p className="text-sm text-muted-foreground">
-          Approve or reject institution access requests
+          Approve or reject lender and field agent access requests
         </p>
       </div>
 

@@ -105,7 +105,7 @@ export function registerLender(data: {
   password: string;
   country: string;
   licenceNumber: string;
-}): { success: true } | { error: string } {
+}): { success: true; user: AuthUser } | { error: string } {
   const users = getUsers();
   if (users.find((u) => u.email.toLowerCase() === data.email.toLowerCase())) {
     return { error: "An account with this email already exists." };
@@ -124,7 +124,35 @@ export function registerLender(data: {
   };
   users.push(newUser);
   saveUsers(users);
-  return { success: true };
+  const { passwordHash: _pw, ...authUser } = newUser;
+  return { success: true, user: authUser };
+}
+
+export function registerAgent(data: {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  nationalId: string;
+  region: string;
+}): { success: true; user: AuthUser } | { error: string } {
+  const users = getUsers();
+  if (users.find((u) => u.email.toLowerCase() === data.email.toLowerCase())) {
+    return { error: "An account with this email already exists." };
+  }
+  const newUser: StoredUser = {
+    id: `agent-${Date.now()}`,
+    email: data.email,
+    name: data.name,
+    role: "agent",
+    country: data.region,
+    status: "pending",
+    passwordHash: hash(data.password),
+  };
+  users.push(newUser);
+  saveUsers(users);
+  const { passwordHash: _pw, ...authUser } = newUser;
+  return { success: true, user: authUser };
 }
 
 export function logout() {
@@ -139,17 +167,20 @@ export function getCurrentUser(): AuthUser | null {
 
 export function getAllLenders(): AuthUser[] {
   return getUsers()
-    .filter((u) => u.role === "lender")
+    .filter((u) => u.role === "lender" || u.role === "agent")
     .map(({ passwordHash: _pw, ...u }) => u);
 }
 
-export function approveLender(id: string) {
+export function approveLender(id: string): AuthUser | null {
   const users = getUsers();
   const idx = users.findIndex((u) => u.id === id);
   if (idx >= 0) {
     users[idx].status = "active";
     saveUsers(users);
+    const { passwordHash: _pw, ...authUser } = users[idx];
+    return authUser;
   }
+  return null;
 }
 
 export function rejectLender(id: string) {
