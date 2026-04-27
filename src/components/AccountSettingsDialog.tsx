@@ -17,6 +17,42 @@ interface Props {
   onOpenChange: (v: boolean) => void;
 }
 
+interface PasswordInputProps {
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  show: boolean;
+  onToggle: () => void;
+  placeholder: string;
+  autoComplete: string;
+}
+
+function PasswordInput({ id, value, onChange, show, onToggle, placeholder, autoComplete }: PasswordInputProps) {
+  return (
+    <div className="relative">
+      <Input
+        id={id}
+        type={show ? "text" : "password"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        className="bg-muted border-0 h-11 pr-10"
+        required
+      />
+      <button
+        type="button"
+        onClick={onToggle}
+        tabIndex={-1}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+        aria-label={show ? "Hide password" : "Show password"}
+      >
+        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  );
+}
+
 export function AccountSettingsDialog({ open, onOpenChange }: Props) {
   const { user } = useAuth();
   const [current, setCurrent] = useState("");
@@ -60,35 +96,6 @@ export function AccountSettingsDialog({ open, onOpenChange }: Props) {
   };
 
   if (!user) return null;
-
-  const PasswordInput = ({
-    id, value, onChange, show, onToggle, placeholder, autoComplete,
-  }: {
-    id: string; value: string; onChange: (v: string) => void;
-    show: boolean; onToggle: () => void; placeholder: string; autoComplete: string;
-  }) => (
-    <div className="relative">
-      <Input
-        id={id}
-        type={show ? "text" : "password"}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        className="bg-muted border-0 h-11 pr-10"
-        required
-      />
-      <button
-        type="button"
-        onClick={onToggle}
-        tabIndex={-1}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-        aria-label={show ? "Hide password" : "Show password"}
-      >
-        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-      </button>
-    </div>
-  );
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
