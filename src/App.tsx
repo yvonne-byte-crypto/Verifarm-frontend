@@ -15,6 +15,7 @@ import Trust from "@/pages/Trust";
 import VerificationQueue from "@/pages/VerificationQueue";
 import AgentRegister from "@/pages/AgentRegister";
 import AdminUsers from "@/pages/AdminUsers";
+import Permissions from "@/pages/Permissions";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import NotFound from "@/pages/NotFound";
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="/agents" element={<AgentRegister />} />
                 <Route path="/trust" element={<Trust />} />
                 <Route path="/users" element={<AdminUsers />} />
+                <Route path="/permissions" element={<Permissions />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

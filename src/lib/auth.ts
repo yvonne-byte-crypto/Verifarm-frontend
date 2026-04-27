@@ -160,3 +160,36 @@ export function rejectLender(id: string) {
     saveUsers(users);
   }
 }
+
+export function updateProfile(
+  id: string,
+  updates: { name: string }
+): AuthUser | { error: string } {
+  const users = getUsers();
+  const idx = users.findIndex((u) => u.id === id);
+  if (idx < 0) return { error: "User not found." };
+  users[idx].name = updates.name.trim();
+  if (users[idx].role === "lender") users[idx].institution = updates.name.trim();
+  saveUsers(users);
+  const { passwordHash: _pw, ...authUser } = users[idx];
+  const token = makeToken(authUser);
+  localStorage.setItem(TOKEN_KEY, token);
+  return authUser;
+}
+
+export function changePassword(
+  id: string,
+  currentPassword: string,
+  newPassword: string
+): { success: true } | { error: string } {
+  const users = getUsers();
+  const idx = users.findIndex((u) => u.id === id);
+  if (idx < 0) return { error: "User not found." };
+  if (users[idx].passwordHash !== hash(currentPassword))
+    return { error: "Current password is incorrect." };
+  if (newPassword.length < 8)
+    return { error: "New password must be at least 8 characters." };
+  users[idx].passwordHash = hash(newPassword);
+  saveUsers(users);
+  return { success: true };
+}

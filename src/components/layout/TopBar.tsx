@@ -10,6 +10,8 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { useDemoMode } from "@/context/DemoModeContext";
 import { useAuth } from "@/context/AuthContext";
+import { ProfileDialog } from "@/components/ProfileDialog";
+import { AccountSettingsDialog } from "@/components/AccountSettingsDialog";
 
 interface Notification {
   id: string;
@@ -82,6 +84,8 @@ interface TopBarProps {
 const TopBar = ({ onMenuToggle }: TopBarProps) => {
   const [notifications, setNotifications] = useState(initialNotifications);
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { connected, publicKey, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
   const { demoMode, setDemoMode } = useDemoMode();
@@ -299,18 +303,27 @@ const TopBar = ({ onMenuToggle }: TopBarProps) => {
 
             {/* Menu items */}
             <div className="py-1.5">
-              {[
-                { icon: User, label: "My Profile" },
-                { icon: Settings, label: "Account Settings" },
-              ].map(({ icon: Icon, label }) => (
-                <button
-                  key={label}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors text-left"
-                >
-                  <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                  {label}
-                </button>
-              ))}
+              <button
+                onClick={() => setProfileOpen(true)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors text-left"
+              >
+                <User className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                My Profile
+              </button>
+              <button
+                onClick={() => setSettingsOpen(true)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors text-left"
+              >
+                <Settings className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                Account Settings
+              </button>
+              <button
+                onClick={() => navigate("/permissions")}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors text-left"
+              >
+                <Shield className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                Permissions & Roles
+              </button>
             </div>
 
             <div className="border-t border-border py-1.5">
@@ -325,6 +338,9 @@ const TopBar = ({ onMenuToggle }: TopBarProps) => {
           </PopoverContent>
         </Popover>
       </div>
+
+      <ProfileDialog open={profileOpen} onOpenChange={setProfileOpen} />
+      <AccountSettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </header>
   );
 };
