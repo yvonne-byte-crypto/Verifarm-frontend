@@ -18,6 +18,7 @@ const MIN_STAKE_SOL = 0.1;
 const MIN_STAKE_LAMPORTS = MIN_STAKE_SOL * 1e9;
 const WORLD_ID_APP_ID = (import.meta.env.VITE_WORLD_ID_APP_ID ?? "app_staging_placeholder") as `app_${string}`;
 const WORLD_ID_ACTION = "register-field-agent";
+const WORLD_ID_VERIFY_URL = `https://developer.worldcoin.org/api/v2/verify/${WORLD_ID_APP_ID}`;
 
 const AgentRegister = () => {
   const wallet = useAnchorWallet();
@@ -32,9 +33,33 @@ const AgentRegister = () => {
 
   // ── World ID handlers ────────────────────────────────────────────────────
 
+  /**
+   * Called by IDKit before onSuccess — verifies the ZK proof with the World ID cloud API.
+   * This is the server-side step that prevents proof replay across different apps/actions.
+   * The signal (wallet pubkey) binds the proof to this specific wallet, preventing reuse.
+   */
+  const handleVerify = async (proof: ISuccessResult) => {
+    const res = await fetch(WORLD_ID_VERIFY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nullifier_hash: proof.nullifier_hash,
+        merkle_root: proof.merkle_root,
+        proof: proof.proof,
+        verification_level: proof.verification_level,
+        action: WORLD_ID_ACTION,
+        signal: wallet?.publicKey.toBase58() ?? "",
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error((err as { detail?: string }).detail ?? "World ID cloud verification failed — proof rejected.");
+    }
+  };
+
   const onWorldIdSuccess = (result: ISuccessResult) => {
     setWorldIdProof(result);
-    toast({ title: "Identity verified", description: "World ID proof confirmed. You can now register as an agent." });
+    toast({ title: "Identity verified ✓", description: "World ID proof confirmed by cloud API. You can now stake and register." });
   };
 
   // ── On-chain registration ────────────────────────────────────────────────
@@ -141,9 +166,23 @@ const AgentRegister = () => {
             </div>
             {worldIdProof && <WorldIdBadge verified />}
           </div>
-          <CardDescription className="text-xs">
-            One human, one agent. World ID prevents sybil attacks via zero-knowledge proof of personhood.
-            Your identity is never stored — only a nullifier hash that proves uniqueness.
+          <CardDescription className="text-xs space-y-1.5">
+            <span className="block">
+              One human, one agent. World ID prevents sybil attacks via zero-knowledge proof of personhood.
+              Your identity is never stored — only a nullifier hash that proves uniqueness.
+            </span>
+            <span className="block rounded-lg bg-secondary/10 border border-secondary/20 px-2.5 py-2 text-secondary/90">
+              <strong>Demo / judges:</strong> Use the{" "}
+              <a
+                href="https://simulator.worldcoin.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-secondary"
+              >
+                World ID Simulator
+              </a>{" "}
+              to generate a test proof — no Orb scan required. Scan the QR code in the Simulator app to complete verification.
+            </span>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -153,8 +192,8 @@ const AgentRegister = () => {
               action={WORLD_ID_ACTION}
               signal={wallet?.publicKey.toBase58() ?? ""}
               verification_level={VerificationLevel.Orb}
+              handleVerify={handleVerify}
               onSuccess={onWorldIdSuccess}
-
             >
               {({ open }) => (
                 <Button
