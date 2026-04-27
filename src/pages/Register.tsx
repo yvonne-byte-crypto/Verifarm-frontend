@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { IDKitWidget, VerificationLevel, type ISuccessResult } from "@worldcoin/idkit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { registerLender, registerAgent } from "@/lib/auth";
+import { registerLender, registerAgent, storeIdPhoto, type IdMethod } from "@/lib/auth";
 import { sendApplicationReceived } from "@/lib/email";
 import verifarmLogo from "@/assets/verifarm-logo.png";
 import {
   Eye, EyeOff, Loader2, CheckCircle2, ArrowLeft,
-  Building2, UserCheck, Info, AlertCircle,
+  Building2, UserCheck, Info, AlertCircle, Globe, Camera, ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const WORLD_ID_APP_ID = (import.meta.env.VITE_WORLD_ID_APP_ID ?? "app_staging_placeholder") as `app_${string}`;
+const WORLD_ID_ACTION = "register-field-agent";
 
 type RegRole = "lender" | "agent";
 
@@ -86,8 +90,43 @@ export default function Register() {
   const setL = (k: keyof typeof lender) => (v: string) => setLender((f) => ({ ...f, [k]: v }));
 
   // Agent form state
-  const [agent, setAgent] = useState({ name: "", email: "", password: "", phone: "", nationalId: "", region: "" });
+  const [agent, setAgent] = useState({ name: "", email: "", password: "", phone: "", region: "" });
   const setA = (k: keyof typeof agent) => (v: string) => setAgent((f) => ({ ...f, [k]: v }));
+
+  // Agent identity verification
+  const [agentIdMethod, setAgentIdMethod] = useState<IdMethod | null>(null);
+  const [worldIdProof, setWorldIdProof] = useState<ISuccessResult | null>(null);
+  const [agentPhotoDataUrl, setAgentPhotoDataUrl] = useState<string | null>(null);
+  const [agentNationalIdNumber, setAgentNationalIdNumber] = useState("");
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setAgentPhotoDataUrl(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleWorldIdVerify = async (proof: ISuccessResult) => {
+    const verifyUrl = `https://developer.worldcoin.org/api/v2/verify/${WORLD_ID_APP_ID}`;
+    const res = await fetch(verifyUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nullifier_hash: proof.nullifier_hash,
+        merkle_root: proof.merkle_root,
+        proof: proof.proof,
+        verification_level: proof.verification_level,
+        action: WORLD_ID_ACTION,
+        signal: agent.email,
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error((err as { detail?: string }).detail ?? "World ID verification failed.");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,9 +143,20 @@ export default function Register() {
       setSubmittedName(lender.name);
     } else {
       if (!agent.region) { setError("Please select a region."); setLoading(false); return; }
-      const result = registerAgent(agent);
+      if (!agentIdMethod) { setError("Please choose an identity verification method."); setLoading(false); return; }
+      if (agentIdMethod === "world_id" && !worldIdProof) { setError("Complete World ID verification before submitting."); setLoading(false); return; }
+      if (agentIdMethod === "national_id_photo" && !agentPhotoDataUrl) { setError("Please upload your national ID photo."); setLoading(false); return; }
+      if (agentIdMethod === "national_id_photo" && !agentNationalIdNumber.trim()) { setError("Please enter your national ID number."); setLoading(false); return; }
+      const result = registerAgent({
+        ...agent,
+        idMethod: agentIdMethod,
+        nationalIdNumber: agentIdMethod === "national_id_photo" ? agentNationalIdNumber.trim() : undefined,
+      });
       setLoading(false);
       if ("error" in result) { setError(result.error); return; }
+      if (agentIdMethod === "national_id_photo" && agentPhotoDataUrl) {
+        storeIdPhoto(result.user.id, agentPhotoDataUrl);
+      }
       await sendApplicationReceived({ to_email: agent.email, to_name: agent.name, role: "agent" });
       setSubmittedName(agent.name);
     }
@@ -274,16 +324,10 @@ export default function Register() {
                     className="bg-muted border-0 h-11" required />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="national-id">National ID number</Label>
-                  <Input id="national-id" placeholder="NIDA / National ID"
-                    value={agent.nationalId} onChange={(e) => setA("nationalId")(e.target.value)}
-                    className="bg-muted border-0 h-11" required />
+                  <Label htmlFor="region">Region of operation</Label>
+                  <SelectField id="region" value={agent.region} onChange={setA("region")}
+                    options={REGIONS} placeholder="Select region…" />
                 </div>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="region">Region of operation</Label>
-                <SelectField id="region" value={agent.region} onChange={setA("region")}
-                  options={REGIONS} placeholder="Select your primary region…" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="email">Email address</Label>
@@ -299,6 +343,134 @@ export default function Register() {
                   show={showPassword} onToggle={() => setShowPassword(!showPassword)}
                 />
               </div>
+
+              {/* Identity verification — choose one */}
+              <div className="space-y-2">
+                <Label>Identity verification <span className="text-destructive">*</span></Label>
+                <p className="text-xs text-muted-foreground">Choose one method to verify your identity.</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Option 1 — World ID */}
+                  <button
+                    type="button"
+                    onClick={() => { setAgentIdMethod("world_id"); setAgentPhotoDataUrl(null); setAgentNationalIdNumber(""); }}
+                    className={cn(
+                      "flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all",
+                      agentIdMethod === "world_id"
+                        ? "border-primary bg-primary/5 ring-1 ring-primary"
+                        : "border-border bg-card hover:border-primary/30 hover:bg-muted/30"
+                    )}
+                  >
+                    <div className={cn(
+                      "h-9 w-9 rounded-lg flex items-center justify-center",
+                      agentIdMethod === "world_id" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                    )}>
+                      <Globe className="h-4 w-4" />
+                    </div>
+                    <p className={cn("text-sm font-semibold", agentIdMethod === "world_id" && "text-primary")}>World ID</p>
+                    <p className="text-xs text-muted-foreground leading-snug">
+                      ZK proof of personhood via World ID. Use the{" "}
+                      <a href="https://simulator.worldcoin.org" target="_blank" rel="noopener noreferrer" className="underline text-primary/70" onClick={(e) => e.stopPropagation()}>
+                        Simulator
+                      </a>{" "}
+                      to test without an Orb scan.
+                    </p>
+                  </button>
+
+                  {/* Option 2 — National ID photo */}
+                  <button
+                    type="button"
+                    onClick={() => { setAgentIdMethod("national_id_photo"); setWorldIdProof(null); }}
+                    className={cn(
+                      "flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all",
+                      agentIdMethod === "national_id_photo"
+                        ? "border-primary bg-primary/5 ring-1 ring-primary"
+                        : "border-border bg-card hover:border-primary/30 hover:bg-muted/30"
+                    )}
+                  >
+                    <div className={cn(
+                      "h-9 w-9 rounded-lg flex items-center justify-center",
+                      agentIdMethod === "national_id_photo" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                    )}>
+                      <Camera className="h-4 w-4" />
+                    </div>
+                    <p className={cn("text-sm font-semibold", agentIdMethod === "national_id_photo" && "text-primary")}>National ID Photo</p>
+                    <p className="text-xs text-muted-foreground leading-snug">Upload a photo of your government-issued national ID card. Admin reviews manually.</p>
+                  </button>
+                </div>
+
+                {/* World ID widget */}
+                {agentIdMethod === "world_id" && (
+                  <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+                    {!worldIdProof ? (
+                      <IDKitWidget
+                        app_id={WORLD_ID_APP_ID}
+                        action={WORLD_ID_ACTION}
+                        signal={agent.email}
+                        verification_level={VerificationLevel.Orb}
+                        handleVerify={handleWorldIdVerify}
+                        onSuccess={(result) => setWorldIdProof(result)}
+                      >
+                        {({ open }) => (
+                          <Button type="button" variant="outline" className="w-full gap-2" onClick={open}>
+                            <ShieldCheck className="h-4 w-4" />
+                            Verify with World ID
+                          </Button>
+                        )}
+                      </IDKitWidget>
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 rounded-lg p-3">
+                        <CheckCircle2 className="h-4 w-4 shrink-0" />
+                        World ID verified. Nullifier hash secured.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* National ID photo upload */}
+                {agentIdMethod === "national_id_photo" && (
+                  <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="national-id-number">National ID number</Label>
+                      <Input
+                        id="national-id-number"
+                        placeholder="e.g. NIDA-12345678"
+                        value={agentNationalIdNumber}
+                        onChange={(e) => setAgentNationalIdNumber(e.target.value)}
+                        className="bg-background border-border h-11"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>ID photo upload</Label>
+                      <input
+                        ref={photoInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handlePhotoChange}
+                      />
+                      {agentPhotoDataUrl ? (
+                        <div className="flex items-center gap-3">
+                          <img src={agentPhotoDataUrl} alt="ID preview" className="h-16 w-24 object-cover rounded-lg border border-border" />
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs text-emerald-700">
+                              <CheckCircle2 className="h-3.5 w-3.5" /> Photo uploaded
+                            </div>
+                            <Button type="button" variant="ghost" size="sm" className="text-xs h-7 px-2" onClick={() => photoInputRef.current?.click()}>
+                              Change photo
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <Button type="button" variant="outline" className="w-full gap-2" onClick={() => photoInputRef.current?.click()}>
+                          <Camera className="h-4 w-4" />
+                          Upload national ID photo
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-2 rounded-lg bg-muted/50 border border-border px-3 py-2">
                 <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-foreground">

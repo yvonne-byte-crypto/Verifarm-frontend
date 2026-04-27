@@ -6,10 +6,10 @@ import { Label } from "@/components/ui/label";
 import { login } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 import verifarmLogo from "@/assets/verifarm-logo.png";
-import { Eye, EyeOff, FlaskConical, Loader2, Leaf, Shield, Building2, UserCheck } from "lucide-react";
+import { Eye, EyeOff, FlaskConical, Loader2, Leaf, Building2, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type RoleOption = "admin" | "lender" | "agent";
+type RoleOption = "lender" | "agent";
 
 const ROLES: {
   id: RoleOption;
@@ -17,12 +17,6 @@ const ROLES: {
   icon: React.ComponentType<{ className?: string }>;
   description: string;
 }[] = [
-  {
-    id: "admin",
-    label: "Super Admin",
-    icon: Shield,
-    description: "Full platform access — manage lenders, agents, loans, and system settings.",
-  },
   {
     id: "lender",
     label: "Lender / Bank",

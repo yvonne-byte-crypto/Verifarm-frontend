@@ -5,11 +5,13 @@ import emailjs from "@emailjs/browser";
 // VITE_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxx
 // VITE_EMAILJS_TEMPLATE_APPLIED=template_xxxxxxx   (application received)
 // VITE_EMAILJS_TEMPLATE_APPROVED=template_xxxxxxx  (account approved)
+// VITE_EMAILJS_TEMPLATE_REJECTED=template_xxxxxxx  (account rejected — falls back to APPROVED template if unset)
 
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID as string | undefined;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string | undefined;
 const TEMPLATE_APPLIED = import.meta.env.VITE_EMAILJS_TEMPLATE_APPLIED as string | undefined;
 const TEMPLATE_APPROVED = import.meta.env.VITE_EMAILJS_TEMPLATE_APPROVED as string | undefined;
+const TEMPLATE_REJECTED = (import.meta.env.VITE_EMAILJS_TEMPLATE_REJECTED as string | undefined) ?? TEMPLATE_APPROVED;
 
 const configured = !!(SERVICE_ID && PUBLIC_KEY && TEMPLATE_APPLIED && TEMPLATE_APPROVED);
 
@@ -54,6 +56,26 @@ export async function sendAccountApproved(params: {
     message: params.role === "lender"
       ? "Your VeriFarm lender account has been approved and activated. You can now sign in to access your institution's loan portfolio and farmer profiles."
       : "Your VeriFarm field agent account has been approved. You can now sign in to access your verification queue and submit farm assessments.",
+    login_url: `${window.location.origin}/login`,
+  });
+}
+
+export async function sendApplicationRejected(params: {
+  to_email: string;
+  to_name: string;
+  role: string;
+  reason: string;
+}) {
+  if (!configured) {
+    console.info("[VeriFarm Email] Application rejected →", params.to_email, "(EmailJS not configured — set VITE_EMAILJS_* env vars)");
+    return;
+  }
+  await emailjs.send(SERVICE_ID!, TEMPLATE_REJECTED!, {
+    to_email: params.to_email,
+    to_name: params.to_name,
+    role_label: params.role === "lender" ? "Lender / Bank" : "Field Agent",
+    subject: "VeriFarm — Application update",
+    message: `Your VeriFarm application was not approved at this time.\n\nReason: ${params.reason}\n\nIf you believe this is an error, please contact support at support@verifarm.co.tz.`,
     login_url: `${window.location.origin}/login`,
   });
 }

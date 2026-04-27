@@ -1,5 +1,6 @@
 export type UserRole = "admin" | "lender" | "agent";
 export type UserStatus = "active" | "pending" | "rejected";
+export type IdMethod = "world_id" | "national_id_photo" | "none";
 
 export interface AuthUser {
   id: string;
@@ -11,6 +12,10 @@ export interface AuthUser {
   country?: string;
   licenceNumber?: string;
   status: UserStatus;
+  registeredAt?: number;
+  idMethod?: IdMethod;
+  phone?: string;
+  nationalIdNumber?: string;
 }
 
 interface StoredUser extends AuthUser {
@@ -19,6 +24,7 @@ interface StoredUser extends AuthUser {
 
 const USERS_KEY = "verifarm_users";
 const TOKEN_KEY = "verifarm_token";
+const PHOTO_PREFIX = "verifarm_photo_";
 
 function hash(s: string): string {
   return btoa(encodeURIComponent(s) + "_vf2026");
@@ -51,6 +57,7 @@ const SEED_USERS: StoredUser[] = [
     name: "Field Agent Musa",
     role: "agent",
     status: "active",
+    idMethod: "none",
     passwordHash: hash("agent123"),
   },
 ];
@@ -79,6 +86,18 @@ function parseToken(token: string): AuthUser | null {
   } catch {
     return null;
   }
+}
+
+export function storeIdPhoto(userId: string, dataUrl: string) {
+  try {
+    localStorage.setItem(`${PHOTO_PREFIX}${userId}`, dataUrl);
+  } catch {
+    // localStorage quota exceeded — silently skip
+  }
+}
+
+export function getIdPhoto(userId: string): string | null {
+  return localStorage.getItem(`${PHOTO_PREFIX}${userId}`);
 }
 
 export function login(
@@ -120,6 +139,8 @@ export function registerLender(data: {
     country: data.country,
     licenceNumber: data.licenceNumber,
     status: "pending",
+    registeredAt: Date.now(),
+    idMethod: "none",
     passwordHash: hash(data.password),
   };
   users.push(newUser);
@@ -133,8 +154,9 @@ export function registerAgent(data: {
   email: string;
   password: string;
   phone: string;
-  nationalId: string;
   region: string;
+  idMethod: IdMethod;
+  nationalIdNumber?: string;
 }): { success: true; user: AuthUser } | { error: string } {
   const users = getUsers();
   if (users.find((u) => u.email.toLowerCase() === data.email.toLowerCase())) {
@@ -146,7 +168,11 @@ export function registerAgent(data: {
     name: data.name,
     role: "agent",
     country: data.region,
+    phone: data.phone,
+    nationalIdNumber: data.nationalIdNumber,
+    idMethod: data.idMethod,
     status: "pending",
+    registeredAt: Date.now(),
     passwordHash: hash(data.password),
   };
   users.push(newUser);
@@ -165,13 +191,19 @@ export function getCurrentUser(): AuthUser | null {
   return parseToken(token);
 }
 
+export function getAllApplications(): AuthUser[] {
+  return getUsers()
+    .filter((u) => u.role !== "admin")
+    .map(({ passwordHash: _pw, ...u }) => u);
+}
+
 export function getAllLenders(): AuthUser[] {
   return getUsers()
     .filter((u) => u.role === "lender" || u.role === "agent")
     .map(({ passwordHash: _pw, ...u }) => u);
 }
 
-export function approveLender(id: string): AuthUser | null {
+export function approveUser(id: string): AuthUser | null {
   const users = getUsers();
   const idx = users.findIndex((u) => u.id === id);
   if (idx >= 0) {
@@ -183,13 +215,25 @@ export function approveLender(id: string): AuthUser | null {
   return null;
 }
 
-export function rejectLender(id: string) {
+export function rejectUser(id: string): AuthUser | null {
   const users = getUsers();
   const idx = users.findIndex((u) => u.id === id);
   if (idx >= 0) {
     users[idx].status = "rejected";
     saveUsers(users);
+    const { passwordHash: _pw, ...authUser } = users[idx];
+    return authUser;
   }
+  return null;
+}
+
+// Keep for backward compat with AdminUsers.tsx
+export function approveLender(id: string): AuthUser | null {
+  return approveUser(id);
+}
+
+export function rejectLender(id: string) {
+  rejectUser(id);
 }
 
 export function updateProfile(

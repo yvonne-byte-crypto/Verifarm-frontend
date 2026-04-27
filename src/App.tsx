@@ -18,6 +18,7 @@ import AdminUsers from "@/pages/AdminUsers";
 import Permissions from "@/pages/Permissions";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import AdminPortal from "@/pages/AdminPortal";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/admin-portal-x7k2" element={<AdminPortal />} />
               <Route element={<DashboardLayout />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/farmers" element={<Farmers />} />
