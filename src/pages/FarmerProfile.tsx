@@ -18,6 +18,7 @@ import {
   Flag,
   FileSearch,
   CheckCircle2,
+  Building2,
 } from "lucide-react";
 import LoanApplicationModal from "@/components/LoanApplicationModal";
 import USSDSimulator from "@/components/USSDSimulator";
@@ -31,12 +32,12 @@ import { toast } from "@/hooks/use-toast";
 
 const farmerData: Record<string, any> = {
   // loanStage: 1=Asset Declaration 2=Field Verification 3=AI Scoring 4=Lender Approval 5=Disbursement 6=Repayment
-  F001: { name: "Amina Juma",    location: "Dodoma",      phone: "+255 712 345 678", land: 5,  cattle: 12, score: 87, eligible: "300,000", eligibleNum: 300000, status: "verified", loanStage: 5 },
-  F002: { name: "Baraka Mwenda", location: "Arusha",      phone: "+255 754 321 987", land: 8,  cattle: 20, score: 92, eligible: "500,000", eligibleNum: 500000, status: "verified", loanStage: 6 },
-  F003: { name: "Chiku Lema",    location: "Mbeya",       phone: "+255 689 456 123", land: 3,  cattle: 6,  score: 72, eligible: "150,000", eligibleNum: 150000, status: "pending",  loanStage: 2 },
-  F004: { name: "Daudi Kileo",   location: "Kilimanjaro", phone: "+255 621 789 456", land: 12, cattle: 35, score: 95, eligible: "800,000", eligibleNum: 800000, status: "verified", loanStage: 6 },
-  F005: { name: "Ester Nkya",    location: "Morogoro",    phone: "+255 745 654 321", land: 4,  cattle: 8,  score: 78, eligible: "200,000", eligibleNum: 200000, status: "verified", loanStage: 4 },
-  F006: { name: "Farida Hassan", location: "Tanga",       phone: "+255 678 111 222", land: 6,  cattle: 15, score: 84, eligible: "350,000", eligibleNum: 350000, status: "pending",  loanStage: 3 },
+  F001: { name: "Amina Juma",    location: "Dodoma",      phone: "+255712345678", land: 5,  cattle: 12, score: 87, eligible: "300,000", eligibleNum: 300000, status: "verified", loanStage: 5, lenderName: "KCB Bank Tanzania" },
+  F002: { name: "Baraka Mwenda", location: "Arusha",      phone: "+255754321987", land: 8,  cattle: 20, score: 92, eligible: "500,000", eligibleNum: 500000, status: "verified", loanStage: 6, lenderName: "NMB Bank" },
+  F003: { name: "Chiku Lema",    location: "Mbeya",       phone: "+255689456123", land: 3,  cattle: 6,  score: 72, eligible: "150,000", eligibleNum: 150000, status: "pending",  loanStage: 2, lenderName: null },
+  F004: { name: "Daudi Kileo",   location: "Kilimanjaro", phone: "+255621789456", land: 12, cattle: 35, score: 95, eligible: "800,000", eligibleNum: 800000, status: "verified", loanStage: 6, lenderName: "Equity Bank Tanzania" },
+  F005: { name: "Ester Nkya",    location: "Morogoro",    phone: "+255745654321", land: 4,  cattle: 8,  score: 78, eligible: "200,000", eligibleNum: 200000, status: "verified", loanStage: 4, lenderName: "CRDB Bank" },
+  F006: { name: "Farida Hassan", location: "Tanga",       phone: "+255678111222", land: 6,  cattle: 15, score: 84, eligible: "350,000", eligibleNum: 350000, status: "pending",  loanStage: 3, lenderName: null },
 };
 
 const activityLogs = [
@@ -53,11 +54,23 @@ const FarmerProfile = () => {
   const [analyzing, setAnalyzing] = useState(true);
   const [simScore, setSimScore] = useState(farmer.score);
   const [simEligible, setSimEligible] = useState(farmer.eligibleNum);
+  const [lenderName, setLenderName] = useState<string | null>(farmer.lenderName ?? null);
 
   useEffect(() => {
     const timer = setTimeout(() => setAnalyzing(false), 1800);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const ussdApi = import.meta.env.VITE_USSD_API_URL;
+    if (!ussdApi || !farmer.phone) return;
+    fetch(`${ussdApi}/api/applications/by-phone/${encodeURIComponent(farmer.phone)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then((data: { lenderName?: string } | null) => {
+        if (data?.lenderName) setLenderName(data.lenderName);
+      })
+      .catch(() => {});
+  }, [farmer.phone]);
 
   const handleApprove = () => {
     toast({ title: "✅ Loan Approved", description: `Loan of TZS ${simEligible.toLocaleString()} approved for ${farmer.name}.` });
@@ -95,6 +108,11 @@ const FarmerProfile = () => {
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {farmer.location}</span>
                 <span className="flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> {farmer.phone}</span>
+                {lenderName && (
+                  <span className="flex items-center gap-1 text-blue-700 bg-blue-50 border border-blue-200 rounded-full px-2 py-0.5 text-xs font-medium">
+                    <Building2 className="h-3 w-3" /> Applied to: {lenderName}
+                  </span>
+                )}
               </div>
             </div>
             <div className="sm:text-right">

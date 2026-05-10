@@ -279,7 +279,7 @@
               },
               {
                 "kind": "account",
-                "path": "verification_record.farmer",
+                "path": "verification_record.asset",
                 "account": "VerificationRecord"
               }
             ]
@@ -374,7 +374,7 @@
               },
               {
                 "kind": "account",
-                "path": "verification_record.farmer",
+                "path": "verification_record.asset",
                 "account": "VerificationRecord"
               }
             ]
@@ -676,7 +676,7 @@
               },
               {
                 "kind": "account",
-                "path": "verification_record.farmer",
+                "path": "verification_record.asset",
                 "account": "VerificationRecord"
               }
             ]
@@ -1737,7 +1737,7 @@
               },
               {
                 "kind": "account",
-                "path": "farmer"
+                "path": "asset"
               }
             ]
           }
@@ -1771,7 +1771,16 @@
           }
         },
         {
-          "name": "farmer"
+          "name": "farmer",
+          "docs": [
+            "Farmer whose asset is being verified"
+          ]
+        },
+        {
+          "name": "asset",
+          "docs": [
+            "The specific asset being verified — must belong to the farmer"
+          ]
         },
         {
           "name": "agent",
@@ -1826,19 +1835,46 @@
           }
         },
         {
+          "name": "farmer",
+          "docs": [
+            "Farmer who owns this asset — used as cNFT leaf_owner and delegate"
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  114,
+                  109,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "farmer.authority",
+                "account": "Farmer"
+              }
+            ]
+          }
+        },
+        {
           "name": "field_officer",
           "docs": [
-            "Field officer minting the tag"
+            "Field officer minting the tag — payer + tree_creator_or_delegate"
           ],
           "writable": true,
           "signer": true
         },
         {
-          "name": "merkle_tree",
+          "name": "tree_authority",
           "writable": true
         },
         {
-          "name": "tree_authority"
+          "name": "merkle_tree",
+          "writable": true
         },
         {
           "name": "log_wrapper"
@@ -2731,6 +2767,21 @@
       "code": 6026,
       "name": "NullifierAlreadyUsed",
       "msg": "This World ID nullifier hash has already been used — one human, one agent account"
+    },
+    {
+      "code": 6027,
+      "name": "NotLivestock",
+      "msg": "Asset type is not Livestock — only livestock assets can be tagged as cNFTs"
+    },
+    {
+      "code": 6028,
+      "name": "FarmerMismatch",
+      "msg": "Farmer account does not match the asset's farmer field"
+    },
+    {
+      "code": 6029,
+      "name": "InvalidTreeConfig",
+      "msg": "TreeConfig account has unexpected layout or insufficient data"
     }
   ],
   "types": [
@@ -3852,14 +3903,6 @@
     },
     {
       "name": "TagLivestockArgs",
-      "docs": [
-        "Mints a compressed NFT (cNFT) via MPL Bubblegum to represent a livestock animal.",
-        "The leaf hash is stored in the Asset PDA for provenance tracking.",
-        "",
-        "Bubblegum CPI requires the merkle tree, tree authority, log wrapper, and",
-        "account compression program — all passed as remaining accounts for flexibility",
-        "across different tree configurations."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -4026,7 +4069,8 @@
     {
       "name": "VerificationRecord",
       "docs": [
-        "One PDA per (agent, farmer) verification submission."
+        "One PDA per (agent, asset) verification submission.",
+        "Seeds: [\"verification_record\", agent, asset]"
       ],
       "type": {
         "kind": "struct",
@@ -4037,6 +4081,13 @@
           },
           {
             "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset",
+            "docs": [
+              "The specific Asset PDA being verified — used as PDA seed."
+            ],
             "type": "pubkey"
           },
           {
@@ -4108,6 +4159,10 @@
           },
           {
             "name": "farmer",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset",
             "type": "pubkey"
           },
           {
