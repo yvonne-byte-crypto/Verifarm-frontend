@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { login } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 import verifarmLogo from "@/assets/verifarm-logo.png";
+import farmHero from "@/assets/farm-hero.png";
 import { Eye, EyeOff, FlaskConical, Loader2, Leaf, Building2, UserCheck, Shield, Link2, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -63,7 +64,18 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left panel — branding */}
-      <div className="hidden lg:flex lg:w-1/2 gradient-primary flex-col justify-between p-12">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {/* Hero background */}
+        <img
+          src={farmHero}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        {/* Dark green overlay — keeps text crisp while photo adds human depth */}
+        <div className="absolute inset-0 gradient-primary opacity-[0.88]" />
+        {/* Content layer */}
+        <div className="relative z-10 flex flex-col justify-between w-full p-12">
         {/* Top — wordmark */}
         <div className="flex items-center gap-3">
           <img src={verifarmLogo} alt="VeriFarm" className="h-10 w-10 rounded-xl object-cover" />
@@ -132,6 +144,7 @@ const Login = () => {
             </div>
           </div>
         </div>
+        {/* end content layer */}
       </div>
 
       {/* Right panel — form */}
