@@ -24,8 +24,13 @@ export default defineConfig(() => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          // React core
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
+          // React core + data-fetching
+          "vendor-react": [
+            "react", "react-dom", "react-router-dom",
+            "@tanstack/react-query", "@tanstack/query-core",
+          ],
+          // Icons — keep all lucide in one chunk instead of dozens of tiny files
+          "vendor-icons": ["lucide-react"],
           // Solana / Web3
           "vendor-solana": [
             "@solana/web3.js",
@@ -35,7 +40,7 @@ export default defineConfig(() => ({
             "@solana/wallet-adapter-wallets",
             "@coral-xyz/anchor",
           ],
-          // Charts
+          // Charts — only loaded when Dashboard route is visited
           "vendor-charts": ["recharts"],
           // UI primitives (Radix)
           "vendor-radix": [
@@ -46,6 +51,8 @@ export default defineConfig(() => ({
             "@radix-ui/react-select",
             "@radix-ui/react-tabs",
           ],
+          // World ID — only loaded on /agents route
+          "vendor-worldid": ["@worldcoin/idkit"],
         },
       },
     },
