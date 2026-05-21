@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
-import { ShieldCheck, Wallet, AlertCircle, CheckCircle2, Loader2, Globe, CreditCard, Camera, Clock, Info } from "lucide-react";
+import { ShieldCheck, Wallet, AlertCircle, CheckCircle2, Loader2, Globe, CreditCard, Camera, Clock, Info, UserCheck, Coins, MapPin, Lock, Award } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import WorldIdBadge from "@/components/WorldIdBadge";
 import { useMyAgentStake } from "@/hooks/useVerifarm";
@@ -227,12 +227,64 @@ const AgentRegister = () => {
 
   return (
     <div className="max-w-lg mx-auto mt-6 space-y-6 animate-fade-in">
+      {/* Heading */}
       <div>
         <h1 className="text-2xl font-bold">Agent Registration</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Become a VeriFarm field agent — verify farms, stake SOL, earn trust.
         </p>
       </div>
+
+      {/* Mission statement */}
+      <div className="rounded-xl border border-primary/20 bg-primary/5 px-5 py-4">
+        <p className="text-sm text-foreground/80 leading-relaxed">
+          Field agents are the foundation of VeriFarm's trust layer. Every farmer who accesses credit does so because an agent like you verified their assets.{" "}
+          <span className="font-semibold text-foreground">Your stake is your commitment. Your verification is their opportunity.</span>
+        </p>
+      </div>
+
+      {/* What happens after you register */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-semibold">What happens after you register</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {[
+            {
+              icon: UserCheck,
+              step: "1",
+              title: "Identity review",
+              desc: "VeriFarm reviews your identity within 24 hours and confirms your agent account.",
+            },
+            {
+              icon: Coins,
+              step: "2",
+              title: "Activate your account",
+              desc: "Stake a minimum of 0.1 SOL on-chain. Your stake is your commitment to honest verification.",
+            },
+            {
+              icon: MapPin,
+              step: "3",
+              title: "Start verifying farmers",
+              desc: "Begin verifying farmers in your assigned region and earn a fee for each approved attestation.",
+            },
+          ].map(({ icon: Icon, step, title, desc }) => (
+            <div key={step} className="flex items-start gap-4">
+              <div className="flex flex-col items-center gap-1 shrink-0">
+                <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center">
+                  <Icon className="h-4 w-4 text-primary-foreground" strokeWidth={1.75} />
+                </div>
+                {step !== "3" && <div className="w-px flex-1 h-4 bg-border" />}
+              </div>
+              <div className="pb-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Step {step}</p>
+                <p className="text-sm font-semibold">{title}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
       {/* Step 1 — World ID */}
       <Card className={`border-0 shadow-sm transition-opacity ${wallet ? "" : "opacity-50 pointer-events-none"}`}>
@@ -493,6 +545,29 @@ const AgentRegister = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Vault trust statement */}
+      <div className={`rounded-xl border border-border bg-muted/30 px-4 py-4 space-y-1.5 ${idMethod === "national_id" ? "hidden" : ""}`}>
+        <div className="flex items-center gap-2 mb-2">
+          <Lock className="h-4 w-4 text-primary shrink-0" strokeWidth={1.75} />
+          <p className="text-xs font-semibold text-foreground">How your stake is protected</p>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Your stake is held in a program-controlled vault on Solana. It is returned in full when you close your account in good standing. It is only ever slashed if a verification you submitted is confirmed as fraudulent by the dispute process.
+        </p>
+      </div>
+
+      {/* Agent Standards */}
+      <div className="rounded-xl border border-primary/15 bg-primary/5 px-5 py-4 space-y-2">
+        <div className="flex items-center gap-2">
+          <Award className="h-4 w-4 text-primary shrink-0" strokeWidth={1.75} />
+          <p className="text-sm font-semibold text-foreground">Agent Standards</p>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          VeriFarm agents are held to the highest verification standards. Every attestation you submit is permanent and on-chain.{" "}
+          <span className="font-medium text-foreground/80">Accuracy protects farmers. Your reputation is your stake.</span>
+        </p>
+      </div>
     </div>
   );
 };
