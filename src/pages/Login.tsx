@@ -144,8 +144,10 @@ const Login = () => {
             </div>
           </div>
         </div>
+        </div>
         {/* end content layer */}
       </div>
+      {/* end left panel */}
 
       {/* Right panel — form */}
       <div className="flex flex-1 flex-col items-center justify-center p-6 lg:p-12 overflow-y-auto">
