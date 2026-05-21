@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { login } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 import verifarmLogo from "@/assets/verifarm-logo.png";
-import { Eye, EyeOff, FlaskConical, Loader2, Leaf, Building2, UserCheck } from "lucide-react";
+import { Eye, EyeOff, FlaskConical, Loader2, Leaf, Building2, UserCheck, Shield, Link2, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type RoleOption = "lender" | "agent";
@@ -64,32 +64,73 @@ const Login = () => {
     <div className="min-h-screen bg-background flex">
       {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-1/2 gradient-primary flex-col justify-between p-12">
+        {/* Top — wordmark */}
         <div className="flex items-center gap-3">
           <img src={verifarmLogo} alt="VeriFarm" className="h-10 w-10 rounded-xl object-cover" />
           <span className="text-xl font-bold text-primary-foreground">VeriFarm</span>
         </div>
-        <div className="space-y-4">
-          <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
-            <Leaf className="h-6 w-6 text-white" />
-          </div>
-          <h2 className="text-4xl font-bold text-white leading-tight">
-            Agricultural micro-lending for East Africa
-          </h2>
-          <p className="text-primary-foreground/70 text-lg">
-            Powered by Solana — transparent, instant, borderless.
-          </p>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          {[
-            { value: "2,847", label: "Active Farmers" },
-            { value: "TZS 1.2B", label: "Disbursed" },
-            { value: "94%", label: "Repayment Rate" },
-          ].map((s) => (
-            <div key={s.label} className="rounded-xl bg-white/10 p-4">
-              <p className="text-xl font-bold text-white">{s.value}</p>
-              <p className="text-xs text-primary-foreground/60 mt-0.5">{s.label}</p>
+
+        {/* Middle — headline + trust indicators */}
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
+              <Leaf className="h-6 w-6 text-white" />
             </div>
-          ))}
+            <h2 className="text-4xl font-bold text-white leading-tight">
+              Agricultural micro-lending for East Africa
+            </h2>
+            <p className="text-primary-foreground/70 text-lg">
+              Powered by Solana — transparent, instant, borderless.
+            </p>
+          </div>
+
+          {/* Trust indicators */}
+          <div className="flex gap-3">
+            {[
+              { icon: Shield, label: "Bank-grade security" },
+              { icon: Link2, label: "Immutable on-chain records" },
+              { icon: Lock, label: "PDPA & KDA compliant" },
+            ].map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="flex-1 flex flex-col items-start gap-1.5 rounded-xl border border-white/15 bg-white/8 px-3 py-3"
+              >
+                <Icon className="h-4 w-4 text-white/70" strokeWidth={1.75} />
+                <p className="text-[11px] font-medium text-white/80 leading-snug">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom — network status + stats */}
+        <div className="space-y-4">
+          {/* Network status */}
+          <div className="flex items-center gap-2.5">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            </span>
+            <span className="text-xs font-medium text-white/70 tracking-wide">Live on Solana Devnet</span>
+          </div>
+
+          {/* Stats */}
+          <div>
+            <p className="text-xs text-primary-foreground/50 uppercase tracking-widest mb-3 font-medium">
+              Trusted by farmers across East Africa
+            </p>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { value: "2,847", label: "Verified farmers" },
+                { value: "TZS 1.2B", label: "Disbursed" },
+                { value: "94%", label: "Repayment rate" },
+              ].map((s) => (
+                <div key={s.label} className="rounded-xl bg-white/10 p-4">
+                  <p className="text-xl font-bold text-white">{s.value}</p>
+                  <p className="text-xs text-primary-foreground/60 mt-0.5">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
