@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { login } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 import verifarmLogo from "@/assets/verifarm-logo.png";
-import farmHero from "@/assets/farm-hero.png";
+import farmHero from "@/assets/farm-hero.jpg";
 import { Eye, EyeOff, FlaskConical, Loader2, Leaf, Building2, UserCheck, Shield, Link2, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
