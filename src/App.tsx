@@ -1,14 +1,11 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WalletProvider } from "@/components/WalletProvider";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
-import DashboardLayout from "@/components/layout/DashboardLayout";
-
-// Lazy — each page is its own chunk, loaded on first navigation
+const DashboardLayout  = lazy(() => import("@/components/layout/DashboardLayout"));
 const Login            = lazy(() => import("@/pages/Login"));
 const Register         = lazy(() => import("@/pages/Register"));
 const Dashboard        = lazy(() => import("@/pages/Dashboard"));
@@ -35,14 +32,13 @@ const PageLoader = () => (
 
 const App = () => (
   <AuthProvider>
-    <WalletProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/admin-portal-x7k2" element={<AdminPortal />} />
@@ -59,12 +55,11 @@ const App = () => (
                   <Route path="/permissions" element={<Permissions />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </WalletProvider>
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   </AuthProvider>
 );
 
