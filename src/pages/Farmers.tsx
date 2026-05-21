@@ -4,16 +4,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin, CheckCircle2, ArrowRight, Info } from "lucide-react";
+import { Search, MapPin, CheckCircle2, ArrowRight, Info, Shield } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const farmersData = [
-  { id: "F001", name: "Amina Juma", location: "Dodoma", land: 5, cattle: 12, score: 87, eligible: "300,000", status: "verified", lenderId: "L001" },
-  { id: "F002", name: "Baraka Mwenda", location: "Arusha", land: 8, cattle: 20, score: 92, eligible: "500,000", status: "verified", lenderId: "L001" },
-  { id: "F003", name: "Chiku Lema", location: "Mbeya", land: 3, cattle: 6, score: 72, eligible: "150,000", status: "pending", lenderId: "L002" },
-  { id: "F004", name: "Daudi Kileo", location: "Kilimanjaro", land: 12, cattle: 35, score: 95, eligible: "800,000", status: "verified", lenderId: "L001" },
-  { id: "F005", name: "Ester Nkya", location: "Morogoro", land: 4, cattle: 8, score: 78, eligible: "200,000", status: "verified", lenderId: "L002" },
-  { id: "F006", name: "Farida Hassan", location: "Tanga", land: 6, cattle: 15, score: 84, eligible: "350,000", status: "pending", lenderId: "L002" },
+  { id: "F001", name: "Amina Juma",    location: "Dodoma",      land: 5,  cattle: 12, score: 87, eligible: "300,000", status: "verified", lenderId: "L001", verifiedDate: "Jan 14, 2026" },
+  { id: "F002", name: "Baraka Mwenda", location: "Arusha",      land: 8,  cattle: 20, score: 92, eligible: "500,000", status: "verified", lenderId: "L001", verifiedDate: "Feb 3, 2026" },
+  { id: "F003", name: "Chiku Lema",    location: "Mbeya",       land: 3,  cattle: 6,  score: 72, eligible: "150,000", status: "pending",  lenderId: "L002", verifiedDate: null },
+  { id: "F004", name: "Daudi Kileo",   location: "Kilimanjaro", land: 12, cattle: 35, score: 95, eligible: "800,000", status: "verified", lenderId: "L001", verifiedDate: "Dec 29, 2025" },
+  { id: "F005", name: "Ester Nkya",    location: "Morogoro",    land: 4,  cattle: 8,  score: 78, eligible: "200,000", status: "verified", lenderId: "L002", verifiedDate: "Mar 7, 2026" },
+  { id: "F006", name: "Farida Hassan", location: "Tanga",       land: 6,  cattle: 15, score: 84, eligible: "350,000", status: "pending",  lenderId: "L002", verifiedDate: null },
 ];
 
 const Farmers = () => {
@@ -107,9 +107,17 @@ const Farmers = () => {
                   <span className="text-sm font-bold text-primary">TZS {f.eligible}</span>
                 </div>
 
-                <div className="flex items-center gap-1 mt-3 text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity justify-center">
-                  View Profile <ArrowRight className="h-3 w-3" />
-                </div>
+                {f.verifiedDate ? (
+                  <div className="flex items-center gap-1.5 mt-3 rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-2">
+                    <Shield className="h-3 w-3 text-primary shrink-0" strokeWidth={2} />
+                    <span className="text-[10px] font-medium text-primary">Verified by VeriFarm</span>
+                    <span className="text-[10px] text-muted-foreground ml-auto">{f.verifiedDate}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 mt-3 text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity justify-center">
+                    View Profile <ArrowRight className="h-3 w-3" />
+                  </div>
+                )}
               </CardContent>
             </Card>
           </Link>

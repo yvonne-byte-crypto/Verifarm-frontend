@@ -251,10 +251,10 @@ const Dashboard = () => {
       </div>
 
       {demoMode && (
-        <div className="flex items-center gap-2 rounded-lg border border-secondary/40 bg-secondary/10 px-4 py-2.5">
-          <FlaskConical className="h-4 w-4 text-secondary shrink-0" aria-hidden="true" />
-          <p className="text-xs font-medium text-secondary">
-            <span className="font-bold">Demo Mode ON</span> — Showing simulated data. Toggle off in the top bar to view live on-chain stats.
+        <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+          <FlaskConical className="h-4 w-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+          <p className="text-xs text-primary/80 leading-relaxed">
+            <span className="font-semibold text-primary">You are viewing verified sample data</span> — all profiles reflect real VeriFarm verification standards. Toggle Demo Mode off in the top bar to view live on-chain data.
           </p>
         </div>
       )}

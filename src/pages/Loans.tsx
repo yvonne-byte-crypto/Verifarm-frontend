@@ -13,6 +13,7 @@ import {
   Send,
   Clock,
   Eye,
+  UserCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,11 +28,11 @@ const loanSteps = [
 type RiskLevel = "Low" | "Medium" | "High";
 
 const allLoans = [
-  { id: "LN-001", farmerId: "F001", farmer: "Amina Juma", amount: "300,000", issued: "Mar 1, 2026", due: "Mar 31, 2026", status: "active", progress: 65, currentStep: 5, aiScore: 87, lenderId: "L001" },
-  { id: "LN-002", farmerId: "F002", farmer: "Baraka Mwenda", amount: "500,000", issued: "Feb 15, 2026", due: "Mar 15, 2026", status: "overdue", progress: 100, currentStep: 5, aiScore: 48, lenderId: "L001" },
-  { id: "LN-003", farmerId: "F004", farmer: "Daudi Kileo", amount: "800,000", issued: "Mar 10, 2026", due: "Apr 10, 2026", status: "active", progress: 30, currentStep: 5, aiScore: 72, lenderId: "L001" },
-  { id: "LN-004", farmerId: "F005", farmer: "Ester Nkya", amount: "200,000", issued: "Mar 5, 2026", due: "Apr 5, 2026", status: "active", progress: 45, currentStep: 4, aiScore: 81, lenderId: "L002" },
-  { id: "LN-005", farmerId: "F003", farmer: "Chiku Lema", amount: "150,000", issued: "Feb 20, 2026", due: "Mar 20, 2026", status: "repaid", progress: 100, currentStep: 5, aiScore: 92, lenderId: "L002" },
+  { id: "LN-001", farmerId: "F001", farmer: "Amina Juma",    amount: "300,000", issued: "Mar 1, 2026",  due: "Mar 31, 2026", status: "active",  progress: 65,  currentStep: 5, aiScore: 87, lenderId: "L001", agentId: "0042", agentVerifiedDate: "January 2026" },
+  { id: "LN-002", farmerId: "F002", farmer: "Baraka Mwenda", amount: "500,000", issued: "Feb 15, 2026", due: "Mar 15, 2026", status: "overdue", progress: 100, currentStep: 5, aiScore: 48, lenderId: "L001", agentId: "0017", agentVerifiedDate: "February 2026" },
+  { id: "LN-003", farmerId: "F004", farmer: "Daudi Kileo",   amount: "800,000", issued: "Mar 10, 2026", due: "Apr 10, 2026", status: "active",  progress: 30,  currentStep: 5, aiScore: 72, lenderId: "L001", agentId: "0042", agentVerifiedDate: "December 2025" },
+  { id: "LN-004", farmerId: "F005", farmer: "Ester Nkya",    amount: "200,000", issued: "Mar 5, 2026",  due: "Apr 5, 2026",  status: "active",  progress: 45,  currentStep: 4, aiScore: 81, lenderId: "L002", agentId: "0031", agentVerifiedDate: "March 2026" },
+  { id: "LN-005", farmerId: "F003", farmer: "Chiku Lema",    amount: "150,000", issued: "Feb 20, 2026", due: "Mar 20, 2026", status: "repaid",  progress: 100, currentStep: 5, aiScore: 92, lenderId: "L002", agentId: "0058", agentVerifiedDate: "February 2026" },
 ];
 
 const getRisk = (score: number): RiskLevel =>
@@ -203,7 +204,13 @@ const Loans = () => {
                       onClick={() => navigate(`/farmers/${loan.farmerId}`)}
                     >
                       <td className="py-3 px-2 font-mono text-xs">{loan.id}</td>
-                      <td className="py-3 px-2 font-medium">{loan.farmer}</td>
+                      <td className="py-3 px-2">
+                        <p className="font-medium">{loan.farmer}</p>
+                        <p className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
+                          <UserCheck className="h-2.5 w-2.5 shrink-0" aria-hidden="true" />
+                          Verified by Agent #{loan.agentId} · {loan.agentVerifiedDate}
+                        </p>
+                      </td>
                       <td className="py-3 px-2">{loan.amount}</td>
                       <td className="py-3 px-2">
                         <div className={cn("h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold", scoreBadgeClass(loan.aiScore))}>
